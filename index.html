@@ -1235,7 +1235,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,deleteDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const fbCfg={apiKey:"AIzaSyA84hE7DlSkp-KqAi72H1KXWVEx-bw_sqA",authDomain:"daily-rh.firebaseapp.com",projectId:"daily-rh",storageBucket:"daily-rh.firebasestorage.app",messagingSenderId:"933947456380",appId:"1:933947456380:web:317245d871e259a4e082f9"};
 const app=initializeApp(fbCfg);const db=getFirestore(app);
 
@@ -1729,17 +1729,41 @@ window.exportHistory=()=>{
 };
 
 // CLEAR ALL DATA
-window.clearAllData=()=>{
+window.clearAllData=async()=>{
   if(!confirm('Tem certeza que deseja EXCLUIR TODOS OS DADOS do sistema?\n\nEssa ação não pode ser desfeita.'))return;
   if(!confirm('Confirmação final: todos os históricos, pautas e configurações serão apagados permanentemente.'))return;
+
+  toast('Apagando dados... aguarde.');
+
+  // Limpar Firebase
+  try{
+    for(const a of['dp','bp','rs','est']){
+      // Apagar documento principal
+      await setDoc(doc(db,'rh-daily',a),{},{merge:false});
+      // Apagar histórico
+      const hs=await getDocs(collection(db,'rh-daily',a,'history'));
+      const dels=[];hs.forEach(d=>dels.push(deleteDoc(doc(db,'rh-daily',a,'history',d.id))));
+      await Promise.all(dels);
+    }
+    // Apagar meta
+    await setDoc(doc(db,'rh-daily','_meta'),{dailysCount:0},{merge:false});
+  }catch(e){console.error('Erro ao limpar Firebase:',e);}
+
+  // Limpar localStorage
   localStorage.clear();
-  store={};kanban={dp:{todo:[],doing:[],done:[]},bp:{todo:[],doing:[],done:[]},rs:{todo:[],doing:[],done:[]},est:{todo:[],doing:[],done:[]}};
+
+  // Resetar estado em memória
+  store={};
+  kanban={dp:{todo:[],doing:[],done:[]},bp:{todo:[],doing:[],done:[]},rs:{todo:[],doing:[],done:[]},est:{todo:[],doing:[],done:[]}};
   prioStatus={};
+
+  // Limpar campos da tela
   ['dp','bp','rs','est'].forEach(a=>{
     document.querySelectorAll(`#form-${a} [data-field]`).forEach(el=>el.value='');
     if(a==='rs'){const tb=document.getElementById('rs-tbody');if(tb)tb.innerHTML='';}
   });
   document.querySelectorAll('.psbtn').forEach(b=>b.className='psbtn');
+
   updateOverview();renderHistory();updateMetrics();renderKanban();
   toast('Todos os dados foram excluídos ✓');
 };
