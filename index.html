@@ -290,6 +290,12 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 
 .metrics-kpi-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin-bottom:28px;align-items:stretch;}
 .met-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px 26px;position:relative;overflow:hidden;transition:all .3s;display:flex;flex-direction:column;min-width:0;}
+.met-section-lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--text2);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.prio-mini-pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:8px;white-space:nowrap;}
+.bp-alert-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:var(--surface2);font-size:13px;}
+.bp-alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.bp-alert-txt{flex:1;color:var(--text2);}
+.bp-alert-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.7px;}
 .met-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--border2);}
 .met-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
 .met-c1::before{background:linear-gradient(90deg,var(--primary),var(--primary-light));}
@@ -518,7 +524,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 <div class="wrap">
   <div class="kpi-row">
     <div class="kpi kpi-1">
-      <div class="kpi-lbl">Dailys Realizadas</div>
+      <div class="kpi-lbl">Daily's Realizadas</div>
       <div class="kpi-val" id="kpi-daily">0</div>
       <div class="kpi-sub">reuniões finalizadas</div>
     </div>
@@ -606,7 +612,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
   <div class="prio-grid" id="prio-overview-grid"></div>
 
   <div class="section-title" style="align-items:center;">
-    Histórico de Dailys
+    Histórico de Daily's
     <button onclick="exportHistory()" style="margin-left:auto;padding:8px 18px;border-radius:12px;border:1px solid var(--primary);background:transparent;color:var(--primary);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:6px;" onmouseover="this.style.background='var(--primary)';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='var(--primary)'">📊 Exportar Histórico</button>
   </div>
   <div class="hist-list" id="history-list"></div>
@@ -971,30 +977,141 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
     <button class="btn-export" onclick="exportData()">📥 Exportar Planilha</button>
   </div>
 
-  <div class="metrics-kpi-row">
+  <!-- BLOCO 1: PRIORIDADES POR ÁREA -->
+  <div class="met-section-lbl">⭐ Prioridades da Semana por Área</div>
+  <div class="metrics-kpi-row" style="margin-bottom:28px;">
     <div class="met-card met-c1">
-      <div class="met-lbl">Total de Demandas</div>
-      <div class="met-val" id="met-total">0</div>
-      <div class="met-trend" id="met-trend-total">todas as áreas</div>
-      <div class="met-bar"><div class="met-bar-fill" id="met-total-bar" style="width:0%;background:var(--primary)"></div></div>
+      <div class="met-lbl">DP · Elias</div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <div class="prio-mini-pill" style="background:rgba(251,191,36,.12);color:#fbbf24"><span id="pm-dp-pending">0</span> Pendente</div>
+        <div class="prio-mini-pill" style="background:rgba(56,189,248,.12);color:#38bdf8"><span id="pm-dp-progress">0</span> Andamento</div>
+        <div class="prio-mini-pill" style="background:rgba(124,179,66,.12);color:#7CB342"><span id="pm-dp-done">0</span> Concluído</div>
+      </div>
+      <div class="met-bar" style="margin-top:14px;"><div class="met-bar-fill" id="pm-dp-bar" style="width:0%;background:#f97316"></div></div>
     </div>
     <div class="met-card met-c2">
-      <div class="met-lbl">A Fazer</div>
-      <div class="met-val" id="met-todo">0</div>
-      <div class="met-trend" id="met-trend-todo">aguardando início</div>
-      <div class="met-bar"><div class="met-bar-fill" id="met-todo-bar" style="width:0%;background:#fbbf24"></div></div>
+      <div class="met-lbl">BP · Amanda</div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <div class="prio-mini-pill" style="background:rgba(251,191,36,.12);color:#fbbf24"><span id="pm-bp-pending">0</span> Pendente</div>
+        <div class="prio-mini-pill" style="background:rgba(56,189,248,.12);color:#38bdf8"><span id="pm-bp-progress">0</span> Andamento</div>
+        <div class="prio-mini-pill" style="background:rgba(124,179,66,.12);color:#7CB342"><span id="pm-bp-done">0</span> Concluído</div>
+      </div>
+      <div class="met-bar" style="margin-top:14px;"><div class="met-bar-fill" id="pm-bp-bar" style="width:0%;background:#38bdf8"></div></div>
     </div>
     <div class="met-card met-c3">
-      <div class="met-lbl">Em Andamento</div>
-      <div class="met-val" id="met-doing">0</div>
-      <div class="met-trend" id="met-trend-doing">em progresso</div>
-      <div class="met-bar"><div class="met-bar-fill" id="met-doing-bar" style="width:0%;background:#38bdf8"></div></div>
+      <div class="met-lbl">R&S · Melissa</div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <div class="prio-mini-pill" style="background:rgba(251,191,36,.12);color:#fbbf24"><span id="pm-rs-pending">0</span> Pendente</div>
+        <div class="prio-mini-pill" style="background:rgba(56,189,248,.12);color:#38bdf8"><span id="pm-rs-progress">0</span> Andamento</div>
+        <div class="prio-mini-pill" style="background:rgba(124,179,66,.12);color:#7CB342"><span id="pm-rs-done">0</span> Concluído</div>
+      </div>
+      <div class="met-bar" style="margin-top:14px;"><div class="met-bar-fill" id="pm-rs-bar" style="width:0%;background:#a78bfa"></div></div>
     </div>
-    <div class="met-card met-c4">
-      <div class="met-lbl">Concluídas</div>
-      <div class="met-val" id="met-done">0</div>
-      <div class="met-trend" id="met-trend-done">finalizadas</div>
-      <div class="met-bar"><div class="met-bar-fill" id="met-done-bar" style="width:0%;background:var(--primary)"></div></div>
+    <div class="met-card" style="border-top:4px solid #7CB342;">
+      <div class="met-lbl">EST · Ursula</div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <div class="prio-mini-pill" style="background:rgba(251,191,36,.12);color:#fbbf24"><span id="pm-est-pending">0</span> Pendente</div>
+        <div class="prio-mini-pill" style="background:rgba(56,189,248,.12);color:#38bdf8"><span id="pm-est-progress">0</span> Andamento</div>
+        <div class="prio-mini-pill" style="background:rgba(124,179,66,.12);color:#7CB342"><span id="pm-est-done">0</span> Concluído</div>
+      </div>
+      <div class="met-bar" style="margin-top:14px;"><div class="met-bar-fill" id="pm-est-bar" style="width:0%;background:#7CB342"></div></div>
+    </div>
+  </div>
+
+  <!-- BLOCO 2: DP MOVIMENTAÇÕES -->
+  <div class="met-section-lbl">👥 DP — Movimentações da Semana</div>
+  <div class="metrics-kpi-row" style="margin-bottom:28px;">
+    <div class="met-card met-c1">
+      <div class="met-lbl">Admissões</div>
+      <div class="met-val" id="dp-met-admissoes" style="font-size:32px;">—</div>
+      <div class="met-trend">Registradas na semana</div>
+    </div>
+    <div class="met-card met-c1">
+      <div class="met-lbl">Rescisões</div>
+      <div class="met-val" id="dp-met-rescisoes" style="font-size:32px;">—</div>
+      <div class="met-trend">Em andamento</div>
+    </div>
+    <div class="met-card met-c1">
+      <div class="met-lbl">Férias Relevantes</div>
+      <div class="met-val" id="dp-met-ferias" style="font-size:32px;">—</div>
+      <div class="met-trend">Colaboradores ausentes</div>
+    </div>
+    <div class="met-card met-c1">
+      <div class="met-lbl">Pendências Tako</div>
+      <div class="met-val" id="dp-met-tako" style="font-size:32px;">—</div>
+      <div class="met-trend">Ajustes necessários</div>
+    </div>
+  </div>
+
+  <!-- BLOCO 3: R&S PIPELINE -->
+  <div class="met-section-lbl">🔍 R&S — Pipeline de Vagas</div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:28px;">
+    <div class="met-card" style="border-top:4px solid #a78bfa;">
+      <div class="met-lbl">Vagas em Aberto</div>
+      <div class="met-val" id="rs-met-abertas" style="font-size:36px;color:#a78bfa;">0</div>
+      <div class="met-trend">Aguardando fechamento</div>
+    </div>
+    <div class="met-card" style="border-top:4px solid #7CB342;">
+      <div class="met-lbl">Vagas Fechadas</div>
+      <div class="met-val" id="rs-met-fechadas" style="font-size:36px;color:#7CB342;">0</div>
+      <div class="met-trend">Encerradas na semana</div>
+    </div>
+    <div class="met-card" style="border-top:4px solid #38bdf8;">
+      <div class="met-lbl">Onboarding em Curso</div>
+      <div class="met-val" id="rs-met-onboard" style="font-size:36px;color:#38bdf8;">—</div>
+      <div class="met-trend">Novos colaboradores</div>
+    </div>
+  </div>
+
+  <!-- Risco por vaga -->
+  <div class="met-section-card" style="margin-bottom:28px;">
+    <div class="met-section-title"><span>⚠️</span> Vagas por Nível de Risco</div>
+    <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;justify-content:center;">
+      <div style="display:flex;align-items:center;gap:14px;padding:20px 36px;border-radius:16px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);flex:1;min-width:160px;max-width:260px;justify-content:center;">
+        <span style="font-size:28px;">🔴</span>
+        <div style="text-align:center;"><div style="font-size:36px;font-weight:800;color:#f87171;" id="rs-risco-alto">0</div><div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:4px;">Alto Risco</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:20px 36px;border-radius:16px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);flex:1;min-width:160px;max-width:260px;justify-content:center;">
+        <span style="font-size:28px;">🟡</span>
+        <div style="text-align:center;"><div style="font-size:36px;font-weight:800;color:#fbbf24;" id="rs-risco-medio">0</div><div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:4px;">Médio Risco</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:20px 36px;border-radius:16px;background:rgba(124,179,66,.08);border:1px solid rgba(124,179,66,.2);flex:1;min-width:160px;max-width:260px;justify-content:center;">
+        <span style="font-size:28px;">🟢</span>
+        <div style="text-align:center;"><div style="font-size:36px;font-weight:800;color:#7CB342;" id="rs-risco-baixo">0</div><div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:4px;">Baixo Risco</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO 4: BP ALERTAS -->
+  <div class="met-section-lbl">🏢 BP — Alertas por Empresa</div>
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-bottom:28px;">
+    <div class="met-section-card">
+      <div class="met-section-title"><span>🏢</span> Agfintech</div>
+      <div id="bp-alerts-ag" style="display:flex;flex-direction:column;gap:10px;margin-top:12px;"></div>
+    </div>
+    <div class="met-section-card">
+      <div class="met-section-title"><span>🏢</span> Clicou, Fechou!</div>
+      <div id="bp-alerts-cf" style="display:flex;flex-direction:column;gap:10px;margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <!-- BLOCO 5: HISTÓRICO DE DAILY'S -->
+  <div class="met-section-lbl">📅 Histórico de Daily's</div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:28px;">
+    <div class="met-card" style="border-top:4px solid var(--primary);">
+      <div class="met-lbl">Daily's no Mês</div>
+      <div class="met-val" id="hist-mes">0</div>
+      <div class="met-trend">Daily's finalizadas</div>
+    </div>
+    <div class="met-card" style="border-top:4px solid #38bdf8;">
+      <div class="met-lbl">Última Daily</div>
+      <div style="font-size:22px;font-weight:800;margin-top:8px;color:#38bdf8;" id="hist-last-data">—</div>
+      <div class="met-trend">Data da última daily</div>
+    </div>
+    <div class="met-card" style="border-top:4px solid #a78bfa;">
+      <div class="met-lbl">Próxima Daily</div>
+      <div style="font-size:22px;font-weight:800;margin-top:8px;color:#a78bfa;" id="hist-proxima">—</div>
+      <div class="met-trend">Próxima sexta-feira</div>
     </div>
   </div>
 
@@ -1010,68 +1127,6 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
     <button onclick="generateAIInsights()" style="padding:12px 24px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:20px;transition:all .25s;">🔄 Atualizar Análise</button>
   </div>
 
-  <div class="charts-row">
-    <div class="chart-card">
-      <div class="chart-title">📊 Demandas por Área</div>
-      <div class="chart-sub">Distribuição de tarefas entre as áreas</div>
-      <div class="bar-chart" id="tasks-by-area"></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">🎯 Status Geral</div>
-      <div class="chart-sub">Visão geral das demandas</div>
-      <div class="donut-wrap">
-        <svg width="160" height="160" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="44" fill="none" stroke="var(--surface2)" stroke-width="12"/>
-          <circle cx="50" cy="50" r="44" fill="none" stroke="#fbbf24" stroke-width="12" stroke-dasharray="0 276.5" stroke-dashoffset="0" id="donut-todo" style="transition:all .8s"/>
-          <circle cx="50" cy="50" r="44" fill="none" stroke="#38bdf8" stroke-width="12" stroke-dasharray="0 276.5" stroke-dashoffset="0" id="donut-doing" style="transition:all .8s"/>
-          <circle cx="50" cy="50" r="44" fill="none" stroke="var(--primary)" stroke-width="12" stroke-dasharray="0 276.5" stroke-dashoffset="0" id="donut-done" style="transition:all .8s"/>
-        </svg>
-        <div class="donut-legend">
-          <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div><span class="legend-label">A Fazer</span><span class="legend-val" id="leg-todo">0</span><span class="legend-pct" id="leg-pct-todo"></span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:#38bdf8"></div><span class="legend-label">Fazendo</span><span class="legend-val" id="leg-doing">0</span><span class="legend-pct" id="leg-pct-doing"></span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--primary)"></div><span class="legend-label">Feito</span><span class="legend-val" id="leg-done">0</span><span class="legend-pct" id="leg-pct-done"></span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="met-section-row">
-    <div class="met-section-card">
-      <div class="met-section-title"><span>⭐</span> Prioridades por Status</div>
-      <div class="prio-status-row" id="prio-metrics-list"></div>
-    </div>
-    <div class="met-section-card">
-      <div class="met-section-title"><span>📋</span> Resumo de Atividades</div>
-      <div id="activity-summary">
-        <div class="admin-toggle">
-          <span class="admin-toggle-label">Total de Prioridades</span>
-          <span class="legend-val" id="sum-prios">0</span>
-        </div>
-        <div class="admin-toggle">
-          <span class="admin-toggle-label">Prioridades Concluídas</span>
-          <span class="legend-val" id="sum-prios-done">0</span>
-        </div>
-        <div class="admin-toggle">
-          <span class="admin-toggle-label">Taxa de Conclusão</span>
-          <span class="legend-val" id="sum-taxa">0%</span>
-        </div>
-        <div class="admin-toggle">
-          <span class="admin-toggle-label">Dailys Finalizadas</span>
-          <span class="legend-val" id="sum-dailys">0</span>
-        </div>
-        <div class="admin-toggle">
-          <span class="admin-toggle-label">Vagas em Aberto (R&S)</span>
-          <span class="legend-val" id="sum-vagas">0</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section-title">📋 Todas as Demandas</div>
-  <div class="tasks-table-wrap">
-    <div class="tt-head"><span>Tarefa</span><span>Área</span><span>Status</span><span>Responsável</span><span>Ação</span></div>
-    <div id="tasks-table-body"></div>
-  </div>
 </div>
 </div>
 
@@ -1412,93 +1467,122 @@ function renderKanban(){['dp','bp','rs','est'].forEach(a=>['todo','doing','done'
 
 // METRICS
 function updateMetrics(){
-  let total=0,todo=0,doing=0,done=0;const byArea={};
-  ['dp','bp','rs','est'].forEach(a=>{const t=getK(a,'todo').length,d=getK(a,'doing').length,dn=getK(a,'done').length;todo+=t;doing+=d;done+=dn;byArea[a]={t,d,dn,tot:t+d+dn};total+=t+d+dn;});
-  document.getElementById('met-total').textContent=total;
-  document.getElementById('met-todo').textContent=todo;
-  document.getElementById('met-doing').textContent=doing;
-  document.getElementById('met-done').textContent=done;
-  document.getElementById('leg-todo').textContent=todo;
-  document.getElementById('leg-doing').textContent=doing;
-  document.getElementById('leg-done').textContent=done;
-  const pct=v=>total>0?Math.round(v/total*100):0;
-  document.getElementById('met-trend-todo').textContent=`${pct(todo)}% do total`;
-  document.getElementById('met-trend-doing').textContent=`${pct(doing)}% do total`;
-  document.getElementById('met-trend-done').textContent=`${pct(done)}% do total`;
-  document.getElementById('leg-pct-todo').textContent=total>0?`${pct(todo)}%`:'';
-  document.getElementById('leg-pct-doing').textContent=total>0?`${pct(doing)}%`:'';
-  document.getElementById('leg-pct-done').textContent=total>0?`${pct(done)}%`:'';
-  document.getElementById('met-todo-bar').style.width=pct(todo)+'%';
-  document.getElementById('met-doing-bar').style.width=pct(doing)+'%';
-  document.getElementById('met-done-bar').style.width=pct(done)+'%';
-  document.getElementById('met-total-bar').style.width='100%';
-  // Overview KPIs
-  let totalPrios=0,donePrios=0;
-  // Total de campos de pauta (não prioridades) para o indicador X/Y
-  const allPautaFields=[
-    // DP
-    'dp_admissoes','dp_rescisoes','dp_ferias','dp_alteracoes','dp_folha',
-    'dp_ajustes','dp_prazos','dp_outros',
-    'dp_notificacoes','dp_documentacao',
-    'dp_reclamacoes','dp_problemas',
-    // BP - Agfintech
-    'bp_ag_clima','bp_ag_percepcoes','bp_ag_conflitos','bp_ag_movimentacoes','bp_ag_promocoes','bp_ag_desligamentos',
-    // BP - Clicou, Fechou!
-    'bp_cf_clima','bp_cf_percepcoes','bp_cf_conflitos','bp_cf_movimentacoes','bp_cf_promocoes','bp_cf_desligamentos',
-    // RS
-    'rs_vagas_abertas','rs_vagas_fechadas','rs_onboarding','rs_info_importantes','rs_outros',
-    // EST
-    'est_projetos','est_marcos','est_kr_info','est_kr_demandas','est_anotacoes'
-  ];
-  let filledPautas=0;
-  allPautaFields.forEach(f=>{const el=document.querySelector(`[data-field="${f}"]`);if(el?.value?.trim())filledPautas++;});
-  const totalPautaFields=allPautaFields.length;
-
+  // ── BLOCO 1: Prioridades por área ──
   ['dp','bp','rs','est'].forEach(a=>{
+    const d=store[a]?.current||store[a]?.draft||{};
+    let pending=0,progress=0,doneP=0;
     [1,2,3].forEach(n=>{
       const field=`${a}_p${n}`;
       const inp=document.querySelector(`[data-field="${field}"]`);
-      const d=store[a]?.current||store[a]?.draft||{};
       const val=inp?.value?.trim()||d[field]?.trim();
-      if(val){totalPrios++;if(prioStatus[field]==='done')donePrios++;}
+      if(val){
+        const s=prioStatus[field]||'pending';
+        if(s==='pending')pending++;
+        else if(s==='progress')progress++;
+        else if(s==='done')doneP++;
+      }
     });
+    const total=pending+progress+doneP;
+    const setPill=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+    setPill(`pm-${a}-pending`,pending);
+    setPill(`pm-${a}-progress`,progress);
+    setPill(`pm-${a}-done`,doneP);
+    const bar=document.getElementById(`pm-${a}-bar`);
+    if(bar)bar.style.width=total>0?Math.round(doneP/total*100)+'%':'0%';
   });
 
-  // KPI 1: dailys realizadas
-  const dailysCount=store._meta?.dailysCount||Object.values(store).reduce((acc,s)=>{if(s?.history)return acc+s.history.length;return acc;},0)/4|0;
-  document.getElementById('kpi-daily').textContent=store._meta?.dailysCount||0;
-  // KPI 2: pautas X/Y
-  document.getElementById('kpi-pautas').textContent=`${filledPautas} / ${totalPautaFields}`;
-  // KPI 3: taxa de conclusão por prioridades
-  document.getElementById('kpi-conclusao').textContent=totalPrios>0?Math.round(donePrios/totalPrios*100)+'%':'0%';
+  // ── BLOCO 2: DP Movimentações ──
+  const dp=store.dp?.current||store.dp?.draft||{};
+  const getVal=(field)=>{
+    const el=document.querySelector(`[data-field="${field}"]`);
+    const v=el?.value?.trim()||dp[field]?.trim()||'';
+    return v?'✓':'—';
+  };
+  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setEl('dp-met-admissoes', getVal('dp_admissoes'));
+  setEl('dp-met-rescisoes', getVal('dp_rescisoes'));
+  setEl('dp-met-ferias', getVal('dp_ferias'));
+  setEl('dp-met-tako', (dp['dp_ajustes']?.trim()||document.querySelector('[data-field="dp_ajustes"]')?.value?.trim())?'✓':'—');
 
-  document.getElementById('sum-prios').textContent=totalPrios;
-  document.getElementById('sum-prios-done').textContent=donePrios;
-  document.getElementById('sum-taxa').textContent=totalPrios>0?Math.round(donePrios/totalPrios*100)+'%':'0%';
-  const hist=store._meta?.dailysCount||0;
-  document.getElementById('sum-dailys').textContent=hist;
-  const vagasEl=document.getElementById('sum-vagas');if(vagasEl)vagasEl.textContent=document.querySelectorAll('#rs-tbody tr').length;
-  // Bar chart
-  const bac=document.getElementById('tasks-by-area');const maxA=Math.max(...Object.values(byArea).map(x=>x.tot),1);
-  bac.innerHTML=Object.entries(byArea).map(([a,v])=>`<div class="bc-row"><span class="bc-area">${AREAS[a].short}</span><span class="bc-person">${AREAS[a].person}</span><div class="bc-track"><div class="bc-fill" style="width:${Math.round(v.tot/maxA*100)}%;background:${AREAS[a].color}"></div></div><span class="bc-val">${v.tot}</span></div>`).join('');
-  // Donut
-  const circ=276.5;let offset=0;
-  [['todo',todo,'#fbbf24'],['doing',doing,'#38bdf8'],['done',done,'#7CB342']].forEach(([id,val])=>{const seg=total>0?(val/total)*circ:0;const el=document.getElementById('donut-'+id);if(el){el.setAttribute('stroke-dasharray',`${seg} ${circ-seg}`);el.setAttribute('stroke-dashoffset',-offset);}offset+=seg;});
-  // Tasks table
-  const tb=document.getElementById('tasks-table-body');const cl={todo:'badge-p',doing:'badge-a',done:'badge-c'};const ll={todo:'A fazer',doing:'Fazendo',done:'Feito'};let rows=[];
-  ['dp','bp','rs','est'].forEach(a=>['todo','doing','done'].forEach(c=>getK(a,c).forEach((t,i)=>rows.push({t,a,c,i}))));
-  tb.innerHTML=rows.length?rows.map(r=>`<div class="tt-row"><span class="tt-name">${r.t}</span><span class="tt-sub"><span class="atag atag-${r.a}">${AREAS[r.a].short}</span></span><span><span class="badge ${cl[r.c]}">${ll[r.c]}</span></span><span class="tt-sub">${AREAS[r.a].person}</span><span><button onclick="delK('${r.a}','${r.c}',${r.i})" style="background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:4px 10px;cursor:pointer;font-family:inherit">✕</button></span></div>`).join(''):'<div style="padding:20px;text-align:center;color:var(--muted);font-size:14px;">Nenhuma demanda registrada.</div>';
-  // Prio metrics
-  const pm=document.getElementById('prio-metrics-list');const sm={pending:{c:'status-pending',l:'Pendente'},progress:{c:'status-progress',l:'Andamento'},done:{c:'status-done',l:'Concluído'}};
-  pm.innerHTML=['dp','bp','rs','est'].map(a=>{
-    const d=store[a]?.current||store[a]?.draft||{};
-    const prios=[1,2,3].map(n=>{
-      const field=`${a}_p${n}`;
-      const inp=document.querySelector(`[data-field="${field}"]`);
-      return{t:inp?.value||d[field],s:prioStatus[field]||'pending'};
-    }).filter(p=>p.t?.trim());
-    return prios.length?prios.map((p,i)=>`<div class="psr-item"><div class="psr-num" style="background:${AREAS[a].color}20;color:${AREAS[a].color}">${i+1}</div><div class="psr-txt">${p.t}</div><span class="prio-status ${sm[p.s]?.c||'status-pending'}">${sm[p.s]?.l||'Pendente'}</span><span class="psr-area atag-${a}">${AREAS[a].short}</span></div>`).join(''):'';
-  }).join('')||'<div style="padding:20px;text-align:center;color:var(--muted);">Nenhuma prioridade cadastrada.</div>';
+  // ── BLOCO 3: R&S Pipeline ──
+  const rsRows=document.querySelectorAll('#rs-tbody tr');
+  let abertas=0,fechadas=0,altoRisco=0,medioRisco=0,baixoRisco=0;
+  rsRows.forEach(tr=>{
+    const inputs=tr.querySelectorAll('input,select');
+    const etapa=inputs[4]?.value||inputs[4]?.querySelector?.('option:checked')?.textContent||'';
+    const risco=(inputs[6]?.value||'').toLowerCase();
+    if(etapa==='Contratado'||etapa==='Onboarding')fechadas++;
+    else abertas++;
+    if(risco.includes('alto')||risco.includes('crítico'))altoRisco++;
+    else if(risco.includes('médio')||risco.includes('medio'))medioRisco++;
+    else if(risco.trim())baixoRisco++;
+  });
+  setEl('rs-met-abertas',abertas);
+  setEl('rs-met-fechadas',fechadas);
+
+  // onboarding via campo de texto
+  const rs=store.rs?.current||store.rs?.draft||{};
+  const onbEl=document.querySelector('[data-field="rs_onboarding"]');
+  const onbVal=onbEl?.value?.trim()||rs['rs_onboarding']?.trim()||'';
+  setEl('rs-met-onboard',onbVal?'✓':'—');
+  setEl('rs-risco-alto',altoRisco);
+  setEl('rs-risco-medio',medioRisco);
+  setEl('rs-risco-baixo',baixoRisco);
+
+  // ── BLOCO 4: BP Alertas ──
+  const bp=store.bp?.current||store.bp?.draft||{};
+  const bpAlerts=(prefix,containerId)=>{
+    const checks=[
+      {field:`${prefix}_conflitos`,label:'Conflitos/Tensões',color:'#f87171',bg:'rgba(248,113,113,.12)'},
+      {field:`${prefix}_desligamentos`,label:'Possíveis Desligamentos',color:'#fbbf24',bg:'rgba(251,191,36,.12)'},
+      {field:`${prefix}_promocoes`,label:'Promoções em Discussão',color:'#7CB342',bg:'rgba(124,179,66,.12)'},
+      {field:`${prefix}_movimentacoes`,label:'Movimentações',color:'#38bdf8',bg:'rgba(56,189,248,.12)'},
+    ];
+    const container=document.getElementById(containerId);if(!container)return;
+    const items=checks.map(c=>{
+      const el=document.querySelector(`[data-field="${c.field}"]`);
+      const val=el?.value?.trim()||bp[c.field]?.trim()||'';
+      if(!val)return'';
+      return`<div class="bp-alert-row"><div class="bp-alert-dot" style="background:${c.color}"></div><span class="bp-alert-txt">${c.label}</span><span class="bp-alert-badge" style="background:${c.bg};color:${c.color}">Registrado</span></div>`;
+    }).join('');
+    container.innerHTML=items||'<div style="color:var(--muted);font-size:13px;padding:8px 0;">Nenhum alerta registrado.</div>';
+  };
+  bpAlerts('bp_ag','bp-alerts-ag');
+  bpAlerts('bp_cf','bp-alerts-cf');
+
+  // ── BLOCO 5: Histórico de Dailys ──
+  const dailysCount=store._meta?.dailysCount||0;
+  setEl('hist-mes',dailysCount);
+  // Última daily: pega a data mais recente entre todas as áreas
+  let lastDate=null;
+  ['dp','bp','rs','est'].forEach(a=>{
+    const hist=store[a]?.history;
+    if(hist?.[0]?.date){
+      const parts=hist[0].date.split('/');
+      if(parts.length===3){
+        const d=new Date(parts[2],parts[1]-1,parts[0]);
+        if(!lastDate||d>lastDate)lastDate=d;
+      }
+    }
+  });
+  setEl('hist-last-data',lastDate?lastDate.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):'—');
+  // Próxima daily: próxima sexta-feira
+  const hoje=new Date();
+  const diaSemana=hoje.getDay();// 0=dom,5=sex
+  const diasAteSexta=diaSemana<=5?(5-diaSemana)||7:6;
+  const proxSexta=new Date(hoje);
+  proxSexta.setDate(hoje.getDate()+(diasAteSexta===0?7:diasAteSexta));
+  setEl('hist-proxima',proxSexta.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}));
+
+  // ── KPIs do Overview (manter funcionando) ──
+  let totalPrios=0,donePrios=0,filledPautas=0;
+  const allPautaFields=['dp_admissoes','dp_rescisoes','dp_ferias','dp_alteracoes','dp_folha','dp_ajustes','dp_prazos','dp_outros','dp_notificacoes','dp_documentacao','dp_reclamacoes','dp_problemas','bp_ag_clima','bp_ag_percepcoes','bp_ag_conflitos','bp_ag_movimentacoes','bp_ag_promocoes','bp_ag_desligamentos','bp_cf_clima','bp_cf_percepcoes','bp_cf_conflitos','bp_cf_movimentacoes','bp_cf_promocoes','bp_cf_desligamentos','rs_vagas_abertas','rs_vagas_fechadas','rs_onboarding','rs_info_importantes','rs_outros','est_projetos','est_marcos','est_kr_info','est_kr_demandas','est_anotacoes'];
+  allPautaFields.forEach(f=>{const el=document.querySelector(`[data-field="${f}"]`);if(el?.value?.trim())filledPautas++;});
+  ['dp','bp','rs','est'].forEach(a=>{[1,2,3].forEach(n=>{const field=`${a}_p${n}`;const inp=document.querySelector(`[data-field="${field}"]`);const dv=store[a]?.current||store[a]?.draft||{};const val=inp?.value?.trim()||dv[field]?.trim();if(val){totalPrios++;if(prioStatus[field]==='done')donePrios++;}});});
+  const kd=document.getElementById('kpi-daily');if(kd)kd.textContent=dailysCount;
+  const kp=document.getElementById('kpi-pautas');if(kp)kp.textContent=`${filledPautas} / ${allPautaFields.length}`;
+  const kc=document.getElementById('kpi-conclusao');if(kc)kc.textContent=totalPrios>0?Math.round(donePrios/totalPrios*100)+'%':'0%';
+
   // Overview dots
   ['dp','bp','rs','est'].forEach(a=>{
     const dot=document.getElementById('dot-'+a);
