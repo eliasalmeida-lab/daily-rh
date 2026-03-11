@@ -40,7 +40,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .login-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--glow);}
 .login-input::placeholder{color:var(--muted);}
 .login-btn{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;cursor:pointer;margin-top:20px;transition:all .25s;box-shadow:0 4px 20px rgba(124,179,66,.3);}
-.login-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(124,179,66,.45);}
+.login-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 28px rgba(124,179,66,.45);}
+.login-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
 .login-users{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;justify-content:center;margin:0 0 8px;}
 .login-user-chip{padding:14px 16px;border-radius:16px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;min-height:54px;text-align:center;}
 .login-user-chip:hover{background:var(--surface3);border-color:var(--border2);color:var(--text);transform:translateY(-1px);}
@@ -445,23 +446,77 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
   .areas-grid,.prio-grid{grid-template-columns:repeat(2,1fr);}
   .metrics-kpi-row{grid-template-columns:repeat(2,1fr);}
 }
+/* ─── HAMBURGER MENU ─── */
+.hamburger{display:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:all .25s;flex-shrink:0;}
+.hamburger span{display:block;width:20px;height:2px;background:var(--text);border-radius:2px;transition:all .3s cubic-bezier(.4,0,.2,1);}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-drawer{position:fixed;top:0;right:-320px;width:300px;max-width:85vw;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:400;transition:right .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(0,0,0,.3);}
+.mobile-drawer.open{right:0;}
+.mobile-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:399;opacity:0;pointer-events:none;transition:opacity .35s;}
+.mobile-drawer-overlay.open{opacity:1;pointer-events:auto;}
+.mobile-drawer-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.mobile-drawer-head .brand-name{font-size:20px;}
+.mobile-drawer-nav{padding:16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+.mobile-nav-btn{padding:14px 20px;border-radius:14px;border:none;background:transparent;color:var(--text2);font-family:'Outfit',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:12px;text-align:left;width:100%;}
+.mobile-nav-btn:hover,.mobile-nav-btn.active{background:var(--surface2);color:var(--primary);font-weight:600;}
+.mobile-drawer-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:10px;}
+
+/* ─── UNSAVED INDICATOR ─── */
+.unsaved-dot{width:8px;height:8px;border-radius:50%;background:#fbbf24;display:none;animation:pulse-glow 2s infinite;box-shadow:0 0 8px rgba(251,191,36,.5);}
+.unsaved-dot.show{display:inline-block;}
+.save-bar.has-changes{border-top-color:rgba(251,191,36,.4);}
+.save-bar.has-changes .save-bar-info::before{content:'⚠ ';color:#fbbf24;}
+
+/* ─── FOCUS IMPROVEMENTS ─── */
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px;}
+button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+
+/* ─── SKELETON LOADING ─── */
+.skeleton{background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:12px;min-height:40px;}
+
+@media(max-width:1100px){
+  .areas-grid,.prio-grid{grid-template-columns:repeat(2,1fr);}
+  .metrics-kpi-row{grid-template-columns:repeat(2,1fr);}
+}
 @media(max-width:960px){
   .areas-grid,.prio-grid,.fgrid,.prio-form-grid,.kanban-board,.charts-row,.metrics-kpi-row,.met-section-row,.admin-grid{grid-template-columns:1fr;}
-  .topbar{padding:0 18px;height:60px;}
-  .wrap,.pautas-wrap,.metrics-wrap,.admin-wrap{padding:18px;}
+  .topbar{padding:0 14px;height:60px;}
+  .wrap,.pautas-wrap,.metrics-wrap,.admin-wrap{padding:16px;}
   .top-nav{display:none;}
-  .save-bar{padding:14px 18px;}
+  .hamburger{display:flex;}
+  .date-widget{display:none;}
+  .save-bar{padding:14px 16px;flex-direction:column;gap:12px;align-items:stretch;}
+  .save-bar-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .pautas-header{flex-direction:column;align-items:flex-start;gap:16px;}
-  .area-tabs{width:100%;}
-  .atab{flex:1;justify-content:center;}
-  .tt-head,.tt-row{grid-template-columns:2fr 90px 110px;}
-  .tt-head span:nth-child(4),.tt-head span:nth-child(5),.tt-row>*:nth-child(4),.tt-row>*:nth-child(5){display:none;}
-  .kpi-row{grid-template-columns:1fr;}
-  .person-card{flex-direction:column;text-align:center;}
-  .metrics-header{flex-direction:column;gap:16px;align-items:flex-start;}
-  .login-users{grid-template-columns:1fr;}
+  .area-tabs{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap;}
+  .area-tabs::-webkit-scrollbar{display:none;}
+  .atab{flex:0 0 auto;min-width:140px;justify-content:center;font-size:13px;padding:12px 16px;}
+  .atab .tab-avatar{width:36px;height:36px;font-size:13px;}
   .tt-head,.tt-row{grid-template-columns:minmax(0,2fr) 90px 110px;}
   .tt-head span:nth-child(4),.tt-head span:nth-child(5),.tt-row>*:nth-child(4),.tt-row>*:nth-child(5){display:none;}
+  .kpi-row{grid-template-columns:1fr;}
+  .person-card{flex-direction:column;text-align:center;padding:20px;}
+  .metrics-header{flex-direction:column;gap:16px;align-items:flex-start;}
+  .login-users{grid-template-columns:1fr 1fr;}
+  .login-card{padding:28px 24px;}
+  .login-logo{width:220px;margin-bottom:20px;}
+  .welcome-text{font-size:32px;}
+  .welcome-name{font-size:38px;}
+  .kpi-val{font-size:32px;}
+  .met-val{font-size:32px !important;}
+  .modal{margin:12px;border-radius:20px;}
+  .modal-body{padding:20px;}
+  .brand-name{font-size:20px;}
+  .brand-sub{display:none;}
+  .btn-daily{padding:10px 16px;font-size:13px;}
+  .btn-daily span.btn-daily-text{display:none;}
+  .user-chip span{display:none;}
+  .toast{left:16px;right:16px;bottom:16px;}
+  .prio-form-grid{gap:12px;}
+  .kanban-board{gap:12px;}
+  .kcol-header{flex-wrap:wrap;}
 }
 
 </style>
@@ -474,12 +529,13 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
   <div class="login-card">
     <div class="login-title">Bem-vindo</div>
     <div class="login-sub">Selecione seu nome para continuar</div>
-    <div class="login-users">
-      <button type="button" class="login-user-chip admin" onclick="quickLogin('Elias')">Elias</button>
-      <button type="button" class="login-user-chip" onclick="quickLogin('Amanda')">Amanda</button>
-      <button type="button" class="login-user-chip" onclick="quickLogin('Ursula')">Ursula</button>
-      <button type="button" class="login-user-chip" onclick="quickLogin('Melissa')">Melissa</button>
+    <div class="login-users" role="group" aria-label="Selecione seu usuário">
+      <button type="button" class="login-user-chip admin" data-login-name="Elias" onclick="markSelectedLogin('Elias')">Elias</button>
+      <button type="button" class="login-user-chip" data-login-name="Amanda" onclick="markSelectedLogin('Amanda')">Amanda</button>
+      <button type="button" class="login-user-chip" data-login-name="Ursula" onclick="markSelectedLogin('Ursula')">Ursula</button>
+      <button type="button" class="login-user-chip" data-login-name="Melissa" onclick="markSelectedLogin('Melissa')">Melissa</button>
     </div>
+    <button class="login-btn" onclick="doLogin()" id="login-btn" disabled>Entrar</button>
   </div>
 </div>
 
@@ -495,7 +551,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 <div class="app-container" id="app-container">
 
 <!-- TOPBAR -->
-<header class="topbar">
+<header class="topbar" role="banner">
   <div class="logo-area">
     <div>
       <div class="brand-name"><span>grão</span><span>direto</span></div>
@@ -503,21 +559,43 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
     </div>
   </div>
   <div class="date-widget" id="date-widget"></div>
-  <div class="top-nav">
+  <nav class="top-nav" role="navigation" aria-label="Navegação principal">
     <button class="nav-btn active" id="nav-overview" onclick="showScreen('overview')">📊 Overview</button>
     <button class="nav-btn" id="nav-pautas" onclick="showScreen('pautas')">📋 Pautas</button>
     <button class="nav-btn" id="nav-metrics" onclick="showScreen('metrics')">📈 Métricas</button>
-  </div>
+  </nav>
   <div class="topbar-right">
     <div class="user-chip" id="user-chip">
       <div class="user-chip-avatar" id="user-avatar">E</div>
       <span id="user-name-display">Elias</span>
     </div>
-    <button class="btn-daily" onclick="openDailyModal()">🚀 Iniciar Daily</button>
-    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Tema">🌙</button>
-    <button class="icon-btn admin-only" id="admin-btn" onclick="showScreen('admin')" title="Admin">⚙️</button>
+    <button class="btn-daily" onclick="openDailyModal()" title="Iniciar Daily">🚀 <span class="btn-daily-text">Iniciar Daily</span></button>
+    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Alternar tema claro/escuro" aria-label="Alternar tema">🌙</button>
+    <button class="icon-btn admin-only" id="admin-btn" onclick="showScreen('admin')" title="Configurações de Admin" aria-label="Admin">⚙️</button>
+    <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Abrir menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer-overlay" id="mobile-overlay" onclick="toggleMobileMenu()"></div>
+<aside class="mobile-drawer" id="mobile-drawer" role="navigation" aria-label="Menu mobile">
+  <div class="mobile-drawer-head">
+    <div class="brand-name"><span>grão</span><span>direto</span></div>
+    <button class="icon-btn" onclick="toggleMobileMenu()" aria-label="Fechar menu">✕</button>
+  </div>
+  <div class="mobile-drawer-nav">
+    <button class="mobile-nav-btn active" id="mnav-overview" onclick="mobileNav('overview')">📊 Overview</button>
+    <button class="mobile-nav-btn" id="mnav-pautas" onclick="mobileNav('pautas')">📋 Pautas</button>
+    <button class="mobile-nav-btn" id="mnav-metrics" onclick="mobileNav('metrics')">📈 Métricas</button>
+    <button class="mobile-nav-btn" id="mnav-admin" onclick="mobileNav('admin')" style="display:none">⚙️ Admin</button>
+  </div>
+  <div class="mobile-drawer-footer">
+    <button class="btn-daily" onclick="openDailyModal();toggleMobileMenu();" style="width:100%;justify-content:center;">🚀 Iniciar Daily</button>
+    <button class="icon-btn" onclick="toggleTheme()" style="width:100%;border-radius:12px;height:44px;">🌙 Alternar Tema</button>
+  </div>
+</aside>
 
 <!-- SCREEN: OVERVIEW -->
 <div class="screen active" id="screen-overview">
@@ -799,6 +877,16 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
           <div class="field"><label>Movimentações de Pessoas</label><textarea class="auto-grow" data-field="bp_cf_movimentacoes" placeholder="Movimentações internas..."></textarea></div>
           <div class="field"><label>Promoções em Discussão</label><textarea class="auto-grow" data-field="bp_cf_promocoes" placeholder="Colaboradores em análise para promoção..."></textarea></div>
           <div class="field"><label>Possíveis Desligamentos</label><textarea class="auto-grow" data-field="bp_cf_desligamentos" placeholder="Casos em avaliação..."></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header">📋 Anotações Gerais</div>
+    <div class="fgrid">
+      <div class="fcard" style="grid-column: 1 / -1;">
+        <div class="fcard-head"><span class="fcard-icon">📝</span><span class="fcard-title">Notas e Observações</span></div>
+        <div class="fcard-body">
+          <div class="field"><label>Anotações Gerais</label><textarea class="auto-grow" data-field="bp_anotacoes_gerais" placeholder="Registre aqui anotações, observações e pontos importantes..." style="min-height:120px"></textarea></div>
         </div>
       </div>
     </div>
@@ -1301,10 +1389,12 @@ let cropState={area:null,img:null,canvas:null,ctx:null,zoom:1,x:0,y:0,drag:false
 let prioStatus={};
 
 // LOGIN
-function markSelectedLogin(name){
+window.markSelectedLogin=name=>{
   selectedLoginName=name;
   document.querySelectorAll('[data-login-name]').forEach(btn=>btn.classList.toggle('selected',btn.dataset.loginName===name));
-}
+  const loginBtn=document.getElementById('login-btn');
+  if(loginBtn){loginBtn.disabled=false;loginBtn.textContent=`Entrar como ${name}`;}
+};
 function finishLogin(name){
   if(!name)return;
   currentUser=name;
@@ -1927,6 +2017,82 @@ window.clearLocalData=()=>{
 
 function trunc(s,l){if(!s)return'';return s.length>l?s.substring(0,l)+'…':s;}
 function toast(msg){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+
+// ─── MOBILE MENU ───
+window.toggleMobileMenu=()=>{
+  const drawer=document.getElementById('mobile-drawer');
+  const overlay=document.getElementById('mobile-overlay');
+  const btn=document.getElementById('hamburger-btn');
+  const isOpen=drawer.classList.contains('open');
+  drawer.classList.toggle('open');
+  overlay.classList.toggle('open');
+  btn.classList.toggle('open');
+  btn.setAttribute('aria-expanded',String(!isOpen));
+  document.body.style.overflow=isOpen?'':'hidden';
+};
+window.mobileNav=(s)=>{
+  window.showScreen(s);
+  document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.classList.remove('active'));
+  const mb=document.getElementById('mnav-'+s);if(mb)mb.classList.add('active');
+  toggleMobileMenu();
+};
+
+const originalShowScreen=window.showScreen;
+window.showScreen=s=>{
+  originalShowScreen(s);
+  document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.classList.remove('active'));
+  const mb=document.getElementById('mnav-'+s);if(mb)mb.classList.add('active');
+};
+
+const originalFinishLogin=finishLogin;
+finishLogin=name=>{
+  originalFinishLogin(name);
+  if(name?.toLowerCase()==='elias'){
+    const ma=document.getElementById('mnav-admin');
+    if(ma)ma.style.display='';
+  }
+};
+
+// ─── UNSAVED CHANGES WARNING ───
+let hasUnsavedChanges=false;
+document.addEventListener('input',e=>{
+  if(e.target.closest('.aform')||e.target.closest('.kanban-board')){
+    hasUnsavedChanges=true;
+    const bar=document.querySelector('.save-bar');
+    if(bar)bar.classList.add('has-changes');
+  }
+});
+window.addEventListener('beforeunload',e=>{
+  if(hasUnsavedChanges){e.preventDefault();e.returnValue='';}
+});
+const origSaveDraft=window.saveDraft;
+window.saveDraft=async()=>{
+  await origSaveDraft();
+  hasUnsavedChanges=false;
+  document.querySelector('.save-bar')?.classList.remove('has-changes');
+};
+const origSaveDaily=window.saveDaily;
+window.saveDaily=async()=>{
+  await origSaveDaily();
+  hasUnsavedChanges=false;
+  document.querySelector('.save-bar')?.classList.remove('has-changes');
+};
+
+// ─── KEYBOARD SHORTCUTS ───
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
+  if(e.ctrlKey||e.metaKey){
+    if(e.key==='s'){e.preventDefault();window.saveDraft();}
+    if(e.key==='d'){e.preventDefault();window.openDailyModal();}
+  }
+  if(e.key==='1'&&e.altKey){e.preventDefault();window.showScreen('overview');}
+  if(e.key==='2'&&e.altKey){e.preventDefault();window.showScreen('pautas');}
+  if(e.key==='3'&&e.altKey){e.preventDefault();window.showScreen('metrics');}
+  if(e.key==='Escape'){
+    closeDailyModal();closeHistoryModal();closeCrop();
+    if(document.getElementById('mobile-drawer')?.classList.contains('open'))toggleMobileMenu();
+  }
+});
 </script>
 </body>
 </html>
