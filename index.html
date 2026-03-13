@@ -1403,37 +1403,50 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
 <!-- TOAST -->
 <div class="toast" id="toast"><span id="toast-msg"></span></div>
 
-<script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,deleteDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const fbCfg={apiKey:"AIzaSyA84hE7DlSkp-KqAi72H1KXWVEx-bw_sqA",authDomain:"daily-rh.firebaseapp.com",projectId:"daily-rh",storageBucket:"daily-rh.firebasestorage.app",messagingSenderId:"933947456380",appId:"1:933947456380:web:317245d871e259a4e082f9"};
-const app=initializeApp(fbCfg);const db=getFirestore(app);
+<script>
+// Firebase will be loaded dynamically
+var db=null,setDoc=null,doc=null,getDoc=null,collection=null,getDocs=null,addDoc=null,deleteDoc=null;
+(async function loadFirebase(){
+  try{
+    var appMod=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    var fsMod=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    var fbCfg={apiKey:"AIzaSyA84hE7DlSkp-KqAi72H1KXWVEx-bw_sqA",authDomain:"daily-rh.firebaseapp.com",projectId:"daily-rh",storageBucket:"daily-rh.firebasestorage.app",messagingSenderId:"933947456380",appId:"1:933947456380:web:317245d871e259a4e082f9"};
+    var app=appMod.initializeApp(fbCfg);
+    db=fsMod.getFirestore(app);
+    setDoc=fsMod.setDoc;doc=fsMod.doc;getDoc=fsMod.getDoc;
+    collection=fsMod.collection;getDocs=fsMod.getDocs;addDoc=fsMod.addDoc;deleteDoc=fsMod.deleteDoc;
+    console.log('Firebase loaded OK');
+  }catch(e){console.warn('Firebase failed to load:',e);}
+})();
 
-const AREAS={dp:{name:'Depto. Pessoal',short:'DP',person:'Elias',color:'#f97316'},bp:{name:'Business Partner',short:'BP',person:'Amanda',color:'#38bdf8'},rs:{name:'R&S',short:'RS',person:'Melissa',color:'#a78bfa'},est:{name:'Estratégico',short:'EST',person:'Ursula',color:'#7CB342'}};
-let store={};
-let avatars={},curTab='dp',currentUser=null,isAdmin=false,selectedLoginName='';
-let cropState={area:null,img:null,canvas:null,ctx:null,zoom:1,x:0,y:0,drag:false,lx:0,ly:0};
-let prioStatus={};
+var AREAS={dp:{name:'Depto. Pessoal',short:'DP',person:'Elias',color:'#f97316'},bp:{name:'Business Partner',short:'BP',person:'Amanda',color:'#38bdf8'},rs:{name:'R&S',short:'RS',person:'Melissa',color:'#a78bfa'},est:{name:'Estratégico',short:'EST',person:'Ursula',color:'#7CB342'}};
+var store={};
+var avatars={},curTab='dp',currentUser=null,isAdmin=false,selectedLoginName='';
+var cropState={area:null,img:null,canvas:null,ctx:null,zoom:1,x:0,y:0,drag:false,lx:0,ly:0};
+var prioStatus={};
 
-// LOGIN
-window.markSelectedLogin=name=>{
+// ─── LOGIN ───
+function markSelectedLogin(name){
   selectedLoginName=name;
-  document.querySelectorAll('[data-login-name]').forEach(btn=>btn.classList.toggle('selected',btn.dataset.loginName===name));
-  const loginBtn=document.getElementById('login-btn');
-  if(loginBtn){loginBtn.disabled=false;loginBtn.textContent=`Entrar como ${name}`;}
-};
+  document.querySelectorAll('[data-login-name]').forEach(function(btn){btn.classList.toggle('selected',btn.dataset.loginName===name);});
+  var loginBtn=document.getElementById('login-btn');
+  if(loginBtn){loginBtn.disabled=false;loginBtn.textContent='Entrar como '+name;}
+}
 function finishLogin(name){
   if(!name)return;
   currentUser=name;
   isAdmin=name.toLowerCase()==='elias';
   document.getElementById('welcome-name').textContent=name;
-  const loginScreen=document.getElementById('login-screen');
-  const welcomeScreen=document.getElementById('welcome-screen');
-  const appContainer=document.getElementById('app-container');
+  var loginScreen=document.getElementById('login-screen');
+  var welcomeScreen=document.getElementById('welcome-screen');
+  var appContainer=document.getElementById('app-container');
   loginScreen.classList.add('hidden');
-  setTimeout(()=>{loginScreen.style.display='none';},300);
+  setTimeout(function(){loginScreen.style.display='none';},300);
   welcomeScreen.classList.add('active');
-  setTimeout(()=>{
+  // Show/hide admin in mobile nav
+  var ma=document.getElementById('mnav-admin');
+  if(ma)ma.style.display=isAdmin?'':'none';
+  setTimeout(function(){
     welcomeScreen.classList.remove('active');
     welcomeScreen.style.display='none';
     appContainer.classList.add('active');
@@ -1443,14 +1456,11 @@ function finishLogin(name){
     init();
   },2500);
 }
-window.quickLogin=name=>{
-  finishLogin(name);
-};
-window.doLogin=()=>{
-  const name=selectedLoginName;
+function doLogin(){
+  var name=selectedLoginName;
   if(!name){toast('Selecione um nome para entrar.');return;}
   finishLogin(name);
-};
+}
 
 async function init(){
   document.getElementById('last-update').textContent=new Date().toLocaleDateString('pt-BR');
@@ -1466,19 +1476,21 @@ async function init(){
   updateRSIndicators();
 }
 
-window.showScreen=s=>{
+function showScreen(s){
   if(s==='admin'&&!isAdmin){toast('⛔ Acesso restrito a administradores.');return;}
-  document.querySelectorAll('.screen').forEach(sc=>sc.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(function(sc){sc.classList.remove('active');});
   document.getElementById('screen-'+s).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const nb=document.getElementById('nav-'+s);if(nb)nb.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+  var nb=document.getElementById('nav-'+s);if(nb)nb.classList.add('active');
+  document.querySelectorAll('.mobile-nav-btn').forEach(function(b){b.classList.remove('active');});
+  var mb=document.getElementById('mnav-'+s);if(mb)mb.classList.add('active');
   if(s==='admin')updateAdminStats();
-};
+}
 
-window.toggleTheme=()=>{const cur=document.documentElement.getAttribute('data-theme');const next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);localStorage.setItem('theme',next);setThemeIcon();};
-function setThemeIcon(){const t=document.documentElement.getAttribute('data-theme');document.getElementById('theme-btn').textContent=t==='dark'?'🌙':'☀️';}
+function toggleTheme(){var cur=document.documentElement.getAttribute('data-theme');var next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);localStorage.setItem('theme',next);setThemeIcon();}
+function setThemeIcon(){var t=document.documentElement.getAttribute('data-theme');var btn=document.getElementById('theme-btn');if(btn)btn.textContent=t==='dark'?'🌙':'☀️';}
 function autoResizeField(el){if(!el||el.tagName!=='TEXTAREA')return;el.style.height='auto';el.style.height=Math.max(el.scrollHeight,110)+'px';}
-function bindAutoGrow(){document.querySelectorAll('.auto-grow').forEach(el=>{autoResizeField(el);el.addEventListener('input',()=>autoResizeField(el));});}
+function bindAutoGrow(){document.querySelectorAll('.auto-grow').forEach(function(el){autoResizeField(el);el.addEventListener('input',function(){autoResizeField(el);});});}
 
 // TABS
 window.switchTab=a=>{
@@ -2232,130 +2244,111 @@ function trunc(s,l){if(!s)return'';return s.length>l?s.substring(0,l)+'…':s;}
 function toast(msg){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 
 // ─── MOBILE MENU ───
-window.toggleMobileMenu=()=>{
-  const drawer=document.getElementById('mobile-drawer');
-  const overlay=document.getElementById('mobile-overlay');
-  const btn=document.getElementById('hamburger-btn');
-  const isOpen=drawer.classList.contains('open');
+function toggleMobileMenu(){
+  var drawer=document.getElementById('mobile-drawer');
+  var overlay=document.getElementById('mobile-overlay');
+  var btn=document.getElementById('hamburger-btn');
+  var isOpen=drawer.classList.contains('open');
   drawer.classList.toggle('open');
   overlay.classList.toggle('open');
   btn.classList.toggle('open');
   btn.setAttribute('aria-expanded',String(!isOpen));
   document.body.style.overflow=isOpen?'':'hidden';
-};
-window.mobileNav=(s)=>{
-  window.showScreen(s);
-  document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.classList.remove('active'));
-  const mb=document.getElementById('mnav-'+s);if(mb)mb.classList.add('active');
+}
+function mobileNav(s){
+  showScreen(s);
   toggleMobileMenu();
-};
-
-const originalShowScreen=window.showScreen;
-window.showScreen=s=>{
-  originalShowScreen(s);
-  document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.classList.remove('active'));
-  const mb=document.getElementById('mnav-'+s);if(mb)mb.classList.add('active');
-};
-
-const originalFinishLogin=finishLogin;
-finishLogin=name=>{
-  originalFinishLogin(name);
-  if(name?.toLowerCase()==='elias'){
-    const ma=document.getElementById('mnav-admin');
-    if(ma)ma.style.display='';
-  }else{
-    const ma=document.getElementById('mnav-admin');
-    if(ma)ma.style.display='none';
-  }
-};
+}
 
 // ─── UNSAVED CHANGES WARNING ───
-let hasUnsavedChanges=false;
-document.addEventListener('input',e=>{
+var hasUnsavedChanges=false;
+document.addEventListener('input',function(e){
   if(e.target.closest('.aform')){
     hasUnsavedChanges=true;
-    const bar=document.querySelector('.save-bar');
+    var bar=document.querySelector('.save-bar');
     if(bar)bar.classList.add('has-changes');
   }
 });
-window.addEventListener('beforeunload',e=>{
+window.addEventListener('beforeunload',function(e){
   if(hasUnsavedChanges){e.preventDefault();e.returnValue='';}
 });
-const origSaveDraft=window.saveDraft;
-window.saveDraft=async()=>{
-  await origSaveDraft();
-  hasUnsavedChanges=false;
-  document.querySelector('.save-bar')?.classList.remove('has-changes');
-};
-const origSaveDaily=window.saveDaily;
-window.saveDaily=async()=>{
-  await origSaveDaily();
-  hasUnsavedChanges=false;
-  document.querySelector('.save-bar')?.classList.remove('has-changes');
-};
+
+// Wrap saveDraft/saveDaily to clear unsaved flag
+(function(){
+  var _origSaveDraft=window.saveDraft;
+  window.saveDraft=async function(){
+    if(_origSaveDraft)await _origSaveDraft();
+    hasUnsavedChanges=false;
+    var bar=document.querySelector('.save-bar');if(bar)bar.classList.remove('has-changes');
+  };
+  var _origSaveDaily=window.saveDaily;
+  window.saveDaily=async function(){
+    if(_origSaveDaily)await _origSaveDaily();
+    hasUnsavedChanges=false;
+    var bar=document.querySelector('.save-bar');if(bar)bar.classList.remove('has-changes');
+  };
+})();
 
 // ─── KEYBOARD SHORTCUTS ───
-document.addEventListener('keydown',e=>{
+document.addEventListener('keydown',function(e){
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
   if(e.ctrlKey||e.metaKey){
-    if(e.key==='s'){e.preventDefault();window.saveDraft();}
-    if(e.key==='d'){e.preventDefault();window.openDailyModal();}
+    if(e.key==='s'){e.preventDefault();saveDraft();}
+    if(e.key==='d'){e.preventDefault();openDailyModal();}
   }
-  if(e.key==='1'&&e.altKey){e.preventDefault();window.showScreen('overview');}
-  if(e.key==='2'&&e.altKey){e.preventDefault();window.showScreen('pautas');}
-  if(e.key==='3'&&e.altKey){e.preventDefault();window.showScreen('metrics');}
+  if(e.key==='1'&&e.altKey){e.preventDefault();showScreen('overview');}
+  if(e.key==='2'&&e.altKey){e.preventDefault();showScreen('pautas');}
+  if(e.key==='3'&&e.altKey){e.preventDefault();showScreen('metrics');}
   if(e.key==='Escape'){
     closeDailyModal();closeHistoryModal();closeCrop();
-    if(document.getElementById('mobile-drawer')?.classList.contains('open'))toggleMobileMenu();
+    if(document.getElementById('mobile-drawer')&&document.getElementById('mobile-drawer').classList.contains('open'))toggleMobileMenu();
   }
+});
+
 // ─── SYNC FIREBASE ───
-window.syncFirebase=async()=>{
+function syncFirebase(){
   toast('Sincronizando dados...');
-  try{
-    await loadFb();
-    // Re-save local data to Firebase
-    for(const a of['dp','bp','rs','est']){
-      const d=store[a];if(!d)continue;
-      if(d.current)await fbSet(a,'current',d.current);
-      if(d.draft)await fbSet(a,'draft',d.draft);
-      if(d.prioHistory)await fbSet(a,'prioHistory',d.prioHistory);
+  loadFb().then(function(){
+    var promises=[];
+    ['dp','bp','rs','est'].forEach(function(a){
+      var d=store[a];if(!d)return;
+      if(d.current)promises.push(fbSet(a,'current',d.current));
+      if(d.draft)promises.push(fbSet(a,'draft',d.draft));
+      if(d.prioHistory)promises.push(fbSet(a,'prioHistory',d.prioHistory));
+    });
+    if(store._meta&&db&&setDoc&&doc){
+      promises.push(setDoc(doc(db,'rh-daily','_meta'),store._meta,{merge:true}));
     }
-    if(store._meta){
-      await setDoc(doc(db,'rh-daily','_meta'),store._meta,{merge:true});
-    }
+    return Promise.all(promises);
+  }).then(function(){
     updateOverview();renderHistory();renderPautaHistory();updateMetrics();updateRSIndicators();
     toast('Dados sincronizados com Firebase ✓');
-  }catch(e){
+  }).catch(function(e){
     console.error('Erro ao sincronizar:',e);
-    toast('Erro ao sincronizar: '+e.message);
-  }
-};
+    toast('Erro ao sincronizar: '+(e.message||e));
+  });
+}
 
 // ─── ADMIN STATS ───
 function updateAdminStats(){
-  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-  // Daily's count
-  setEl('admin-dailys-count',store._meta?.dailysCount||0);
-  // Pautas count
-  let pautasCount=0;
-  ['dp','bp','rs','est'].forEach(a=>{pautasCount+=(store[a]?.pautaHistory||[]).length;});
+  function setEl(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+  setEl('admin-dailys-count',store._meta?store._meta.dailysCount||0:0);
+  var pautasCount=0;
+  ['dp','bp','rs','est'].forEach(function(a){pautasCount+=((store[a]&&store[a].pautaHistory)||[]).length;});
   setEl('admin-pautas-count',pautasCount);
-  // Active priorities
-  let activePrios=0;
-  ['dp','bp','rs','est'].forEach(a=>{
-    [1,2,3].forEach(n=>{
-      const field=`${a}_p${n}`;
-      const inp=document.querySelector(`[data-field="${field}"]`);
-      const d=store[a]?.current||store[a]?.draft||{};
-      if(inp?.value?.trim()||d[field]?.trim())activePrios++;
+  var activePrios=0;
+  ['dp','bp','rs','est'].forEach(function(a){
+    [1,2,3].forEach(function(n){
+      var field=a+'_p'+n;
+      var inp=document.querySelector('[data-field="'+field+'"]');
+      var d=(store[a]&&(store[a].current||store[a].draft))||{};
+      if((inp&&inp.value&&inp.value.trim())||(d[field]&&d[field].trim()))activePrios++;
     });
   });
   setEl('admin-prios-count',activePrios);
-  // Archived priorities
-  let archived=0;
-  ['dp','bp','rs','est'].forEach(a=>{archived+=(store[a]?.prioHistory||[]).length;});
+  var archived=0;
+  ['dp','bp','rs','est'].forEach(function(a){archived+=((store[a]&&store[a].prioHistory)||[]).length;});
   setEl('admin-archived-count',archived);
-  // Last update
   setEl('last-update',new Date().toLocaleDateString('pt-BR'));
 }
 </script>
