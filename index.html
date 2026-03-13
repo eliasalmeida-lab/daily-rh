@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Painel RH · Grão Direto</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --tr:0.3s cubic-bezier(0.25,0.1,0.25,1);
@@ -12,7 +12,7 @@
   --secondary:#78716c;--secondary-light:#a8a29e;
   --accent:#4ade80;
   --radius:14px;
-  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --font:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 }
 [data-theme="dark"]{
   --bg:#09090b;--bg2:#0f0f12;--surface:#18181b;--surface2:#1e1e23;--surface3:#27272a;
@@ -213,32 +213,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .person-card-name{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:2px;}
 .person-card-role{font-size:12px;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:.5px;}
 
-/* ─── KANBAN / DEMANDAS ─── */
+/* ─── SECTION HEADERS ─── */
 .section-header{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
 .section-header::after{content:'';flex:1;height:1px;background:var(--border2);}
-.kanban-board{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:24px;}
-.kanban-col{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px;min-height:160px;}
-.kcol-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.kcol-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;}
-.kcol-a-fazer .kcol-title{color:#f59e0b;}
-.kcol-fazendo .kcol-title{color:#3b82f6;}
-.kcol-feito .kcol-title{color:var(--primary-dark);}
-.kcol-count{font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;}
-.kcol-a-fazer .kcol-count{background:rgba(245,158,11,.10);color:#f59e0b;}
-.kcol-fazendo .kcol-count{background:rgba(59,130,246,.10);color:#3b82f6;}
-.kcol-feito .kcol-count{background:rgba(34,197,94,.10);color:var(--primary-dark);}
-.kcol-cards{display:flex;flex-direction:column;gap:8px;min-height:80px;}
-.kcard{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--text);line-height:1.5;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;transition:all .2s;cursor:grab;}
-.kcard:hover{border-color:var(--border2);box-shadow:var(--card-shadow);}
-.kcard-del{font-size:12px;color:var(--muted);cursor:pointer;opacity:0;transition:all .2s;padding:2px 4px;border-radius:4px;}
-.kcard:hover .kcard-del{opacity:1;}
-.kcard-del:hover{color:#ef4444;background:rgba(239,68,68,.08);}
-.kadd{display:flex;gap:8px;margin-top:10px;}
-.kadd input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;transition:all .2s;}
-.kadd input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--glow);}
-.kadd input::placeholder{color:var(--muted);}
-.kadd-btn{padding:10px 16px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;font-size:14px;font-weight:600;font-family:var(--font);transition:all .2s;}
-.kadd-btn:hover{background:var(--primary-dark);color:#fff;border-color:var(--primary-dark);}
 
 /* ─── PRIORITIES FORM ─── */
 .prio-form-section{margin-bottom:24px;}
@@ -256,6 +233,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .psbtn.active-pending{background:rgba(245,158,11,.10);border-color:rgba(245,158,11,.25);color:#f59e0b;}
 .psbtn.active-progress{background:rgba(59,130,246,.10);border-color:rgba(59,130,246,.25);color:#3b82f6;}
 .psbtn.active-done{background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.25);color:var(--primary-dark);}
+.btn-new-prio{padding:6px 14px;border-radius:6px;border:1px dashed var(--border2);background:transparent;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s;color:var(--muted);}
+.btn-new-prio:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--glow);}
 
 /* ─── FORM FIELDS ─── */
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
@@ -483,7 +462,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
   .metrics-kpi-row{grid-template-columns:repeat(2,1fr);}
 }
 @media(max-width:960px){
-  .areas-grid,.prio-grid,.fgrid,.prio-form-grid,.kanban-board,.charts-row,.metrics-kpi-row,.met-section-row,.admin-grid{grid-template-columns:1fr;}
+  .areas-grid,.prio-grid,.fgrid,.prio-form-grid,.charts-row,.metrics-kpi-row,.met-section-row,.admin-grid{grid-template-columns:1fr;}
   .topbar{padding:0 14px;height:52px;}
   .wrap,.pautas-wrap,.metrics-wrap,.admin-wrap{padding:14px;}
   .top-nav{display:none;}
@@ -517,8 +496,6 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
   .user-chip span{display:none;}
   .toast{left:14px;right:14px;bottom:14px;}
   .prio-form-grid{gap:10px;}
-  .kanban-board{gap:10px;}
-  .kcol-header{flex-wrap:wrap;}
 }
 
 </style>
@@ -751,6 +728,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
             <button class="psbtn" data-status="pending" onclick="setStatus(this,'dp_p1')">⏳ Pendente</button>
             <button class="psbtn" data-status="progress" onclick="setStatus(this,'dp_p1')">🔄 Andamento</button>
             <button class="psbtn" data-status="done" onclick="setStatus(this,'dp_p1')">✅ Concluído</button>
+            <button class="btn-new-prio" onclick="novaPrioridade('dp',1)">🔄 Nova Prioridade</button>
           </div>
         </div>
         <div class="prio-form-card">
@@ -760,6 +738,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
             <button class="psbtn" data-status="pending" onclick="setStatus(this,'dp_p2')">⏳ Pendente</button>
             <button class="psbtn" data-status="progress" onclick="setStatus(this,'dp_p2')">🔄 Andamento</button>
             <button class="psbtn" data-status="done" onclick="setStatus(this,'dp_p2')">✅ Concluído</button>
+            <button class="btn-new-prio" onclick="novaPrioridade('dp',2)">🔄 Nova Prioridade</button>
           </div>
         </div>
         <div class="prio-form-card">
@@ -769,6 +748,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
             <button class="psbtn" data-status="pending" onclick="setStatus(this,'dp_p3')">⏳ Pendente</button>
             <button class="psbtn" data-status="progress" onclick="setStatus(this,'dp_p3')">🔄 Andamento</button>
             <button class="psbtn" data-status="done" onclick="setStatus(this,'dp_p3')">✅ Concluído</button>
+            <button class="btn-new-prio" onclick="novaPrioridade('dp',3)">🔄 Nova Prioridade</button>
           </div>
         </div>
       </div>
@@ -838,6 +818,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
             <button class="psbtn" data-status="pending" onclick="setStatus(this,'bp_p1')">⏳ Pendente</button>
             <button class="psbtn" data-status="progress" onclick="setStatus(this,'bp_p1')">🔄 Andamento</button>
             <button class="psbtn" data-status="done" onclick="setStatus(this,'bp_p1')">✅ Concluído</button>
+            <button class="btn-new-prio" onclick="novaPrioridade('bp',1)">🔄 Nova Prioridade</button>
           </div>
         </div>
         <div class="prio-form-card">
@@ -847,6 +828,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
             <button class="psbtn" data-status="pending" onclick="setStatus(this,'bp_p2')">⏳ Pendente</button>
             <button class="psbtn" data-status="progress" onclick="setStatus(this,'bp_p2')">🔄 Andamento</button>
             <button class="psbtn" data-status="done" onclick="setStatus(this,'bp_p2')">✅ Concluído</button>
+            <button class="btn-new-prio" onclick="novaPrioridade('bp',2)">🔄 Nova Prioridade</button>
           </div>
         </div>
         <div class="prio-form-card">
@@ -856,6 +838,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
             <button class="psbtn" data-status="pending" onclick="setStatus(this,'bp_p3')">⏳ Pendente</button>
             <button class="psbtn" data-status="progress" onclick="setStatus(this,'bp_p3')">🔄 Andamento</button>
             <button class="psbtn" data-status="done" onclick="setStatus(this,'bp_p3')">✅ Concluído</button>
+            <button class="btn-new-prio" onclick="novaPrioridade('bp',3)">🔄 Nova Prioridade</button>
           </div>
         </div>
       </div>
@@ -925,6 +908,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
             <button class="psbtn" data-status="pending" onclick="setStatus(this,'rs_p1')">⏳ Pendente</button>
             <button class="psbtn" data-status="progress" onclick="setStatus(this,'rs_p1')">🔄 Andamento</button>
             <button class="psbtn" data-status="done" onclick="setStatus(this,'rs_p1')">✅ Concluído</button>
+            <button class="btn-new-prio" onclick="novaPrioridade('rs',1)">🔄 Nova Prioridade</button>
           </div>
         </div>
         <div class="prio-form-card">
@@ -934,6 +918,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
             <button class="psbtn" data-status="pending" onclick="setStatus(this,'rs_p2')">⏳ Pendente</button>
             <button class="psbtn" data-status="progress" onclick="setStatus(this,'rs_p2')">🔄 Andamento</button>
             <button class="psbtn" data-status="done" onclick="setStatus(this,'rs_p2')">✅ Concluído</button>
+            <button class="btn-new-prio" onclick="novaPrioridade('rs',2)">🔄 Nova Prioridade</button>
           </div>
         </div>
         <div class="prio-form-card">
@@ -943,6 +928,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
             <button class="psbtn" data-status="pending" onclick="setStatus(this,'rs_p3')">⏳ Pendente</button>
             <button class="psbtn" data-status="progress" onclick="setStatus(this,'rs_p3')">🔄 Andamento</button>
             <button class="psbtn" data-status="done" onclick="setStatus(this,'rs_p3')">✅ Concluído</button>
+            <button class="btn-new-prio" onclick="novaPrioridade('rs',3)">🔄 Nova Prioridade</button>
           </div>
         </div>
       </div>
@@ -1009,6 +995,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
             <button class="psbtn" data-status="pending" onclick="setStatus(this,'est_p1')">⏳ Pendente</button>
             <button class="psbtn" data-status="progress" onclick="setStatus(this,'est_p1')">🔄 Andamento</button>
             <button class="psbtn" data-status="done" onclick="setStatus(this,'est_p1')">✅ Concluído</button>
+            <button class="btn-new-prio" onclick="novaPrioridade('est',1)">🔄 Nova Prioridade</button>
           </div>
         </div>
         <div class="prio-form-card">
@@ -1018,6 +1005,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
             <button class="psbtn" data-status="pending" onclick="setStatus(this,'est_p2')">⏳ Pendente</button>
             <button class="psbtn" data-status="progress" onclick="setStatus(this,'est_p2')">🔄 Andamento</button>
             <button class="psbtn" data-status="done" onclick="setStatus(this,'est_p2')">✅ Concluído</button>
+            <button class="btn-new-prio" onclick="novaPrioridade('est',2)">🔄 Nova Prioridade</button>
           </div>
         </div>
         <div class="prio-form-card">
@@ -1027,6 +1015,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
             <button class="psbtn" data-status="pending" onclick="setStatus(this,'est_p3')">⏳ Pendente</button>
             <button class="psbtn" data-status="progress" onclick="setStatus(this,'est_p3')">🔄 Andamento</button>
             <button class="psbtn" data-status="done" onclick="setStatus(this,'est_p3')">✅ Concluído</button>
+            <button class="btn-new-prio" onclick="novaPrioridade('est',3)">🔄 Nova Prioridade</button>
           </div>
         </div>
       </div>
@@ -1077,75 +1066,96 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
     <button class="btn-export" onclick="exportData()">📥 Exportar Planilha</button>
   </div>
 
-  <!-- BLOCO 1: PRIORIDADES POR ÁREA -->
+  <!-- BLOCO 1: HEALTH SCORE GERAL -->
+  <div class="met-section-lbl">🎯 Score de Saúde do RH</div>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:18px;margin-bottom:28px;">
+    <div class="met-card" style="border-top:4px solid var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+      <div style="position:relative;width:160px;height:160px;">
+        <svg viewBox="0 0 36 36" style="width:100%;height:100%;transform:rotate(-90deg);">
+          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--surface3)" stroke-width="3"/>
+          <path id="health-ring" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--primary)" stroke-width="3" stroke-dasharray="0, 100" stroke-linecap="round" style="transition:stroke-dasharray 1s ease;"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div id="health-score" style="font-size:42px;font-weight:800;letter-spacing:-2px;color:var(--text);">0%</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.8px;">Score</div>
+        </div>
+      </div>
+      <div id="health-label" style="margin-top:16px;font-size:14px;font-weight:600;color:var(--primary-dark);text-align:center;">Calculando...</div>
+    </div>
+    <div class="met-card" style="border-top:4px solid #38bdf8;">
+      <div class="met-lbl" style="margin-bottom:16px;">Composição do Score</div>
+      <div id="health-breakdown" style="display:flex;flex-direction:column;gap:14px;"></div>
+    </div>
+  </div>
+
+  <!-- BLOCO 2: PRIORIDADES POR ÁREA COM GRÁFICO DE BARRAS -->
   <div class="met-section-lbl">⭐ Prioridades da Semana por Área</div>
+  <div style="display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:18px;margin-bottom:28px;">
+    <div class="met-card" style="border-top:4px solid var(--primary);">
+      <div class="met-lbl" style="margin-bottom:16px;">Progresso por Área</div>
+      <div id="prio-bars-chart" style="display:flex;flex-direction:column;gap:18px;"></div>
+    </div>
+    <div class="met-card" style="border-top:4px solid #a78bfa;">
+      <div class="met-lbl" style="margin-bottom:16px;">Distribuição de Status</div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100% - 40px);">
+        <div style="position:relative;width:180px;height:180px;">
+          <svg viewBox="0 0 36 36" style="width:100%;height:100%;transform:rotate(-90deg);" id="prio-donut">
+            <circle cx="18" cy="18" r="14" fill="none" stroke="var(--surface3)" stroke-width="4"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div id="prio-donut-total" style="font-size:32px;font-weight:800;color:var(--text);">0</div>
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Total</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:16px;margin-top:18px;flex-wrap:wrap;justify-content:center;">
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;"><div style="width:10px;height:10px;border-radius:50%;background:#fbbf24;"></div><span style="color:var(--text2);">Pendente <strong id="prio-donut-pending">0</strong></span></div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;"><div style="width:10px;height:10px;border-radius:50%;background:#38bdf8;"></div><span style="color:var(--text2);">Andamento <strong id="prio-donut-progress">0</strong></span></div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;"><div style="width:10px;height:10px;border-radius:50%;background:#7CB342;"></div><span style="color:var(--text2);">Concluído <strong id="prio-donut-done">0</strong></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO 3: RADAR DE ÁREAS — Preenchimento de pautas por área -->
+  <div class="met-section-lbl">📊 Preenchimento de Pautas por Área</div>
   <div class="metrics-kpi-row" style="margin-bottom:28px;">
     <div class="met-card met-c1">
-      <div class="met-lbl">DP · Elias</div>
-      <div style="display:flex;gap:10px;margin-top:8px;">
-        <div class="prio-mini-pill" style="background:rgba(251,191,36,.12);color:#fbbf24"><span id="pm-dp-pending">0</span> Pendente</div>
-        <div class="prio-mini-pill" style="background:rgba(56,189,248,.12);color:#38bdf8"><span id="pm-dp-progress">0</span> Andamento</div>
-        <div class="prio-mini-pill" style="background:rgba(124,179,66,.12);color:#7CB342"><span id="pm-dp-done">0</span> Concluído</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(249,115,22,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#f97316;">DP</div>
+        <div><div class="met-lbl" style="margin:0;">Depto. Pessoal</div><div style="font-size:11px;color:var(--muted);">Elias</div></div>
       </div>
-      <div class="met-bar" style="margin-top:14px;"><div class="met-bar-fill" id="pm-dp-bar" style="width:0%;background:#f97316"></div></div>
+      <div style="display:flex;align-items:end;gap:8px;"><div id="met-dp-pct" style="font-size:36px;font-weight:800;color:#f97316;">0%</div><div id="met-dp-count" style="font-size:12px;color:var(--muted);margin-bottom:6px;">0/10 campos</div></div>
+      <div class="met-bar" style="margin-top:10px;"><div class="met-bar-fill" id="met-dp-bar" style="width:0%;background:linear-gradient(90deg,#f97316,#fb923c);"></div></div>
     </div>
     <div class="met-card met-c2">
-      <div class="met-lbl">BP · Amanda</div>
-      <div style="display:flex;gap:10px;margin-top:8px;">
-        <div class="prio-mini-pill" style="background:rgba(251,191,36,.12);color:#fbbf24"><span id="pm-bp-pending">0</span> Pendente</div>
-        <div class="prio-mini-pill" style="background:rgba(56,189,248,.12);color:#38bdf8"><span id="pm-bp-progress">0</span> Andamento</div>
-        <div class="prio-mini-pill" style="background:rgba(124,179,66,.12);color:#7CB342"><span id="pm-bp-done">0</span> Concluído</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(56,189,248,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#38bdf8;">BP</div>
+        <div><div class="met-lbl" style="margin:0;">Business Partner</div><div style="font-size:11px;color:var(--muted);">Amanda</div></div>
       </div>
-      <div class="met-bar" style="margin-top:14px;"><div class="met-bar-fill" id="pm-bp-bar" style="width:0%;background:#38bdf8"></div></div>
+      <div style="display:flex;align-items:end;gap:8px;"><div id="met-bp-pct" style="font-size:36px;font-weight:800;color:#38bdf8;">0%</div><div id="met-bp-count" style="font-size:12px;color:var(--muted);margin-bottom:6px;">0/12 campos</div></div>
+      <div class="met-bar" style="margin-top:10px;"><div class="met-bar-fill" id="met-bp-bar" style="width:0%;background:linear-gradient(90deg,#38bdf8,#7dd3fc);"></div></div>
     </div>
     <div class="met-card met-c3">
-      <div class="met-lbl">R&S · Melissa</div>
-      <div style="display:flex;gap:10px;margin-top:8px;">
-        <div class="prio-mini-pill" style="background:rgba(251,191,36,.12);color:#fbbf24"><span id="pm-rs-pending">0</span> Pendente</div>
-        <div class="prio-mini-pill" style="background:rgba(56,189,248,.12);color:#38bdf8"><span id="pm-rs-progress">0</span> Andamento</div>
-        <div class="prio-mini-pill" style="background:rgba(124,179,66,.12);color:#7CB342"><span id="pm-rs-done">0</span> Concluído</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(167,139,250,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#a78bfa;">RS</div>
+        <div><div class="met-lbl" style="margin:0;">Recrutamento</div><div style="font-size:11px;color:var(--muted);">Melissa</div></div>
       </div>
-      <div class="met-bar" style="margin-top:14px;"><div class="met-bar-fill" id="pm-rs-bar" style="width:0%;background:#a78bfa"></div></div>
+      <div style="display:flex;align-items:end;gap:8px;"><div id="met-rs-pct" style="font-size:36px;font-weight:800;color:#a78bfa;">0%</div><div id="met-rs-count" style="font-size:12px;color:var(--muted);margin-bottom:6px;">0/5 campos</div></div>
+      <div class="met-bar" style="margin-top:10px;"><div class="met-bar-fill" id="met-rs-bar" style="width:0%;background:linear-gradient(90deg,#a78bfa,#c4b5fd);"></div></div>
     </div>
     <div class="met-card" style="border-top:4px solid #7CB342;">
-      <div class="met-lbl">EST · Ursula</div>
-      <div style="display:flex;gap:10px;margin-top:8px;">
-        <div class="prio-mini-pill" style="background:rgba(251,191,36,.12);color:#fbbf24"><span id="pm-est-pending">0</span> Pendente</div>
-        <div class="prio-mini-pill" style="background:rgba(56,189,248,.12);color:#38bdf8"><span id="pm-est-progress">0</span> Andamento</div>
-        <div class="prio-mini-pill" style="background:rgba(124,179,66,.12);color:#7CB342"><span id="pm-est-done">0</span> Concluído</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(124,179,66,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#7CB342;">ES</div>
+        <div><div class="met-lbl" style="margin:0;">Estratégico</div><div style="font-size:11px;color:var(--muted);">Ursula</div></div>
       </div>
-      <div class="met-bar" style="margin-top:14px;"><div class="met-bar-fill" id="pm-est-bar" style="width:0%;background:#7CB342"></div></div>
+      <div style="display:flex;align-items:end;gap:8px;"><div id="met-est-pct" style="font-size:36px;font-weight:800;color:#7CB342;">0%</div><div id="met-est-count" style="font-size:12px;color:var(--muted);margin-bottom:6px;">0/5 campos</div></div>
+      <div class="met-bar" style="margin-top:10px;"><div class="met-bar-fill" id="met-est-bar" style="width:0%;background:linear-gradient(90deg,#7CB342,#aed581);"></div></div>
     </div>
   </div>
 
-  <!-- BLOCO 2: DP MOVIMENTAÇÕES -->
-  <div class="met-section-lbl">👥 DP — Movimentações da Semana</div>
-  <div class="metrics-kpi-row" style="margin-bottom:28px;">
-    <div class="met-card met-c1">
-      <div class="met-lbl">Admissões</div>
-      <div class="met-val" id="dp-met-admissoes" style="font-size:32px;">—</div>
-      <div class="met-trend">Registradas na semana</div>
-    </div>
-    <div class="met-card met-c1">
-      <div class="met-lbl">Rescisões</div>
-      <div class="met-val" id="dp-met-rescisoes" style="font-size:32px;">—</div>
-      <div class="met-trend">Em andamento</div>
-    </div>
-    <div class="met-card met-c1">
-      <div class="met-lbl">Férias Relevantes</div>
-      <div class="met-val" id="dp-met-ferias" style="font-size:32px;">—</div>
-      <div class="met-trend">Colaboradores ausentes</div>
-    </div>
-    <div class="met-card met-c1">
-      <div class="met-lbl">Pendências Tako</div>
-      <div class="met-val" id="dp-met-tako" style="font-size:32px;">—</div>
-      <div class="met-trend">Ajustes necessários</div>
-    </div>
-  </div>
-
-  <!-- BLOCO 3: R&S PIPELINE -->
+  <!-- BLOCO 4: R&S PIPELINE -->
   <div class="met-section-lbl">🔍 R&S — Pipeline de Vagas</div>
-  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:28px;">
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:18px;">
     <div class="met-card" style="border-top:4px solid #a78bfa;">
       <div class="met-lbl">Vagas em Aberto</div>
       <div class="met-val" id="rs-met-abertas" style="font-size:36px;color:#a78bfa;">0</div>
@@ -1162,8 +1172,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
       <div class="met-trend">Novos colaboradores</div>
     </div>
   </div>
-
-  <!-- Risco por vaga -->
+  <!-- Risco visual -->
   <div class="met-section-card" style="margin-bottom:28px;">
     <div class="met-section-title"><span>⚠️</span> Vagas por Nível de Risco</div>
     <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;justify-content:center;">
@@ -1182,7 +1191,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
     </div>
   </div>
 
-  <!-- BLOCO 4: BP ALERTAS -->
+  <!-- BLOCO 5: BP ALERTAS -->
   <div class="met-section-lbl">🏢 BP — Alertas por Empresa</div>
   <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-bottom:28px;">
     <div class="met-section-card">
@@ -1195,13 +1204,13 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
     </div>
   </div>
 
-  <!-- BLOCO 5: HISTÓRICO DE DAILY'S -->
+  <!-- BLOCO 6: TIMELINE DE DAILY'S -->
   <div class="met-section-lbl">📅 Histórico de Daily's</div>
-  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:28px;">
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:18px;">
     <div class="met-card" style="border-top:4px solid var(--primary);">
-      <div class="met-lbl">Daily's no Mês</div>
+      <div class="met-lbl">Daily's Finalizadas</div>
       <div class="met-val" id="hist-mes">0</div>
-      <div class="met-trend">Daily's finalizadas</div>
+      <div class="met-trend">Total acumulado</div>
     </div>
     <div class="met-card" style="border-top:4px solid #38bdf8;">
       <div class="met-lbl">Última Daily</div>
@@ -1215,6 +1224,12 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
     </div>
   </div>
 
+  <!-- BLOCO 7: HISTÓRICO DE PRIORIDADES ARQUIVADAS -->
+  <div class="met-section-lbl">🗂️ Prioridades Arquivadas</div>
+  <div class="met-section-card" style="margin-bottom:28px;">
+    <div id="archived-prios" style="display:flex;flex-direction:column;gap:10px;"></div>
+  </div>
+
   <!-- AI INSIGHTS -->
   <div class="ai-card" style="background:linear-gradient(135deg,rgba(124,179,66,.08),rgba(139,195,74,.04));border:1px solid rgba(124,179,66,.25);border-radius:22px;padding:28px;margin-bottom:28px;">
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
@@ -1224,7 +1239,7 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
     <div id="ai-insights" style="font-size:14px;line-height:1.8;color:var(--text);">
       <div style="display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px;">Aguardando dados para análise...</div>
     </div>
-    <button onclick="generateAIInsights()" style="padding:12px 24px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:20px;transition:all .25s;">🔄 Atualizar Análise</button>
+    <button onclick="generateAIInsights()" style="padding:12px 24px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;margin-top:20px;transition:all .25s;">🔄 Atualizar Análise</button>
   </div>
 
 </div>
@@ -1395,7 +1410,7 @@ const fbCfg={apiKey:"AIzaSyA84hE7DlSkp-KqAi72H1KXWVEx-bw_sqA",authDomain:"daily-
 const app=initializeApp(fbCfg);const db=getFirestore(app);
 
 const AREAS={dp:{name:'Depto. Pessoal',short:'DP',person:'Elias',color:'#f97316'},bp:{name:'Business Partner',short:'BP',person:'Amanda',color:'#38bdf8'},rs:{name:'R&S',short:'RS',person:'Melissa',color:'#a78bfa'},est:{name:'Estratégico',short:'EST',person:'Ursula',color:'#7CB342'}};
-let store={},kanban={dp:{todo:[],doing:[],done:[]},bp:{todo:[],doing:[],done:[]},rs:{todo:[],doing:[],done:[]},est:{todo:[],doing:[],done:[]}};
+let store={};
 let avatars={},curTab='dp',currentUser=null,isAdmin=false,selectedLoginName='';
 let cropState={area:null,img:null,canvas:null,ctx:null,zoom:1,x:0,y:0,drag:false,lx:0,ly:0};
 let prioStatus={};
@@ -1439,11 +1454,11 @@ window.doLogin=()=>{
 
 async function init(){
   document.getElementById('last-update').textContent=new Date().toLocaleDateString('pt-BR');
-  const lk=localStorage.getItem('rh-kanban');if(lk)kanban=JSON.parse(lk);
+  
   const la=localStorage.getItem('rh-avatars');if(la){avatars=JSON.parse(la);Object.entries(avatars).forEach(([a,src])=>applyAvatar(a,src));}
   const lp=localStorage.getItem('rh-prio-status');if(lp)prioStatus=JSON.parse(lp);
   await loadFb();
-  renderKanban();updateMetrics();buildPrioOverview();
+  updateMetrics();buildPrioOverview();
   bindAutoGrow();
   setThemeIcon();
   const savedTheme=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',savedTheme);setThemeIcon();
@@ -1482,6 +1497,36 @@ window.setStatus=(btn,field)=>{
   btn.classList.add('active-'+status);
   prioStatus[field]=status;
   localStorage.setItem('rh-prio-status',JSON.stringify(prioStatus));
+};
+
+// NOVA PRIORIDADE — salva a prioridade atual no histórico e limpa o campo
+window.novaPrioridade=async(area,num)=>{
+  const field=`${area}_p${num}`;
+  const inp=document.querySelector(`[data-field="${field}"]`);
+  const val=inp?.value?.trim();
+  if(!val){toast('Prioridade já está vazia.');return;}
+  if(!confirm(`Arquivar a Prioridade ${num} atual e limpar para uma nova?`))return;
+  // Salvar no histórico de prioridades
+  if(!store[area])store[area]={};
+  if(!store[area].prioHistory)store[area].prioHistory=[];
+  store[area].prioHistory.unshift({
+    text:val,
+    status:prioStatus[field]||'pending',
+    num:num,
+    archivedAt:new Date().toISOString(),
+    date:new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})
+  });
+  // Limpar o campo e status
+  inp.value='';
+  delete prioStatus[field];
+  localStorage.setItem('rh-prio-status',JSON.stringify(prioStatus));
+  const container=inp.closest('.prio-form-card');
+  if(container)container.querySelectorAll('.psbtn').forEach(b=>b.className='psbtn');
+  // Salvar
+  localStorage.setItem('rh-store',JSON.stringify(store));
+  try{await fbSet(area,'prioHistory',store[area].prioHistory);}catch(e){}
+  updateMetrics();buildPrioOverview();
+  toast(`Prioridade ${num} arquivada ✓`);
 };
 
 function restorePrioStatus(){
@@ -1551,25 +1596,14 @@ function clearAvatar(a){
   ['av-init-'+a,'tav-init-'+a,'pc-init-'+a].forEach(id=>{let el=document.getElementById(id);if(el)el.style.display='';});
 }
 
-// KANBAN
-function getK(a,c){return kanban[a]?.[c]||[];}
-function setK(a,c,arr){if(!kanban[a])kanban[a]={};kanban[a][c]=arr;localStorage.setItem('rh-kanban',JSON.stringify(kanban));}
-function renderKCol(a,c){
-  const cards=getK(a,c);const el=document.getElementById(`${a}-col-${c}`);const cnt=document.getElementById(`${a}-cnt-${c}`);if(!el)return;
-  el.innerHTML=cards.map((t,i)=>`<div class="kcard" draggable="true" ondragstart="dstart(event,'${a}','${c}',${i})"><span class="kcard-txt">${t}</span><span class="kcard-del" onclick="delK('${a}','${c}',${i})">✕</span></div>`).join('');
-  if(cnt)cnt.textContent=cards.length;
-  el.ondragover=e=>e.preventDefault();
-  el.ondrop=e=>{e.preventDefault();const d=JSON.parse(e.dataTransfer.getData('text/plain'));moveK(d.a,d.c,d.i,a,c);};
-}
-window.dstart=(e,a,c,i)=>e.dataTransfer.setData('text/plain',JSON.stringify({a,c,i}));
-function moveK(fa,fc,fi,ta,tc){const fr=getK(fa,fc);const item=fr.splice(fi,1)[0];setK(fa,fc,fr);const to=getK(ta,tc);to.push(item);setK(ta,tc,to);renderKanban();updateMetrics();}
-window.addKanbanCard=(a,c)=>{const inp=document.getElementById(`${a}-inp-${c}`);if(!inp||!inp.value.trim())return;const cards=getK(a,c);cards.push(inp.value.trim());setK(a,c,cards);inp.value='';renderKCol(a,c);updateMetrics();};
-window.delK=(a,c,i)=>{const cards=getK(a,c);cards.splice(i,1);setK(a,c,cards);renderKCol(a,c);updateMetrics();};
-function renderKanban(){['dp','bp','rs','est'].forEach(a=>['todo','doing','done'].forEach(c=>renderKCol(a,c)));}
 
 // METRICS
 function updateMetrics(){
-  // ── BLOCO 1: Prioridades por área ──
+  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+
+  // ── Prioridades por área (dados) ──
+  let gPending=0,gProgress=0,gDone=0;
+  const areaStats={};
   ['dp','bp','rs','est'].forEach(a=>{
     const d=store[a]?.current||store[a]?.draft||{};
     let pending=0,progress=0,doneP=0;
@@ -1579,34 +1613,129 @@ function updateMetrics(){
       const val=inp?.value?.trim()||d[field]?.trim();
       if(val){
         const s=prioStatus[field]||'pending';
-        if(s==='pending')pending++;
-        else if(s==='progress')progress++;
-        else if(s==='done')doneP++;
+        if(s==='pending'){pending++;gPending++;}
+        else if(s==='progress'){progress++;gProgress++;}
+        else if(s==='done'){doneP++;gDone++;}
       }
     });
-    const total=pending+progress+doneP;
-    const setPill=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-    setPill(`pm-${a}-pending`,pending);
-    setPill(`pm-${a}-progress`,progress);
-    setPill(`pm-${a}-done`,doneP);
-    const bar=document.getElementById(`pm-${a}-bar`);
-    if(bar)bar.style.width=total>0?Math.round(doneP/total*100)+'%':'0%';
+    areaStats[a]={pending,progress,done:doneP,total:pending+progress+doneP};
   });
 
-  // ── BLOCO 2: DP Movimentações ──
-  const dp=store.dp?.current||store.dp?.draft||{};
-  const getVal=(field)=>{
-    const el=document.querySelector(`[data-field="${field}"]`);
-    const v=el?.value?.trim()||dp[field]?.trim()||'';
-    return v?'✓':'—';
-  };
-  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-  setEl('dp-met-admissoes', getVal('dp_admissoes'));
-  setEl('dp-met-rescisoes', getVal('dp_rescisoes'));
-  setEl('dp-met-ferias', getVal('dp_ferias'));
-  setEl('dp-met-tako', (dp['dp_ajustes']?.trim()||document.querySelector('[data-field="dp_ajustes"]')?.value?.trim())?'✓':'—');
+  // ── Prioridades — Gráfico de barras por área ──
+  const barsChart=document.getElementById('prio-bars-chart');
+  if(barsChart){
+    const colors={dp:'#f97316',bp:'#38bdf8',rs:'#a78bfa',est:'#7CB342'};
+    barsChart.innerHTML=['dp','bp','rs','est'].map(a=>{
+      const s=areaStats[a];
+      const pct=s.total>0?Math.round(s.done/s.total*100):0;
+      return`<div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:10px;height:10px;border-radius:50%;background:${colors[a]}"></div>
+            <span style="font-size:13px;font-weight:600;color:var(--text);">${AREAS[a].short} · ${AREAS[a].person}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:11px;color:var(--muted);">${s.done}/${s.total}</span>
+            <span style="font-size:14px;font-weight:700;color:${colors[a]};">${pct}%</span>
+          </div>
+        </div>
+        <div style="height:10px;border-radius:5px;background:var(--surface3);overflow:hidden;display:flex;">
+          <div style="width:${s.total>0?Math.round(s.done/s.total*100):0}%;background:${colors[a]};border-radius:5px 0 0 5px;transition:width .8s ease;"></div>
+          <div style="width:${s.total>0?Math.round(s.progress/s.total*100):0}%;background:${colors[a]}60;transition:width .8s ease;"></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:4px;">
+          <span style="font-size:10px;color:#fbbf24;">⏳ ${s.pending}</span>
+          <span style="font-size:10px;color:#38bdf8;">🔄 ${s.progress}</span>
+          <span style="font-size:10px;color:#7CB342;">✅ ${s.done}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
 
-  // ── BLOCO 3: R&S Pipeline ──
+  // ── Donut de status ──
+  const totalPrioGlobal=gPending+gProgress+gDone;
+  setEl('prio-donut-total',totalPrioGlobal);
+  setEl('prio-donut-pending',gPending);
+  setEl('prio-donut-progress',gProgress);
+  setEl('prio-donut-done',gDone);
+  const donut=document.getElementById('prio-donut');
+  if(donut&&totalPrioGlobal>0){
+    const circ=2*Math.PI*14;
+    const pPct=gPending/totalPrioGlobal*100;
+    const prPct=gProgress/totalPrioGlobal*100;
+    const dPct=gDone/totalPrioGlobal*100;
+    let offset=0;
+    donut.innerHTML=`<circle cx="18" cy="18" r="14" fill="none" stroke="var(--surface3)" stroke-width="4"/>
+      <circle cx="18" cy="18" r="14" fill="none" stroke="#fbbf24" stroke-width="4" stroke-dasharray="${pPct} ${100-pPct}" stroke-dashoffset="${-offset}" style="transition:all .8s;"/>
+      <circle cx="18" cy="18" r="14" fill="none" stroke="#38bdf8" stroke-width="4" stroke-dasharray="${prPct} ${100-prPct}" stroke-dashoffset="${-(offset+pPct)}" style="transition:all .8s;"/>
+      <circle cx="18" cy="18" r="14" fill="none" stroke="#7CB342" stroke-width="4" stroke-dasharray="${dPct} ${100-dPct}" stroke-dashoffset="${-(offset+pPct+prPct)}" style="transition:all .8s;"/>`;
+  }
+
+  // ── Preenchimento de pautas por área ──
+  const areaFields={
+    dp:['dp_admissoes','dp_rescisoes','dp_ferias','dp_alteracoes','dp_folha','dp_ajustes','dp_prazos','dp_outros','dp_notificacoes','dp_documentacao','dp_reclamacoes','dp_problemas'],
+    bp:['bp_ag_clima','bp_ag_percepcoes','bp_ag_conflitos','bp_ag_movimentacoes','bp_ag_promocoes','bp_ag_desligamentos','bp_cf_clima','bp_cf_percepcoes','bp_cf_conflitos','bp_cf_movimentacoes','bp_cf_promocoes','bp_cf_desligamentos'],
+    rs:['rs_vagas_abertas','rs_vagas_fechadas','rs_onboarding','rs_info_importantes','rs_outros'],
+    est:['est_projetos','est_marcos','est_kr_info','est_kr_demandas','est_anotacoes']
+  };
+  let totalFilled=0,totalFields=0;
+  Object.entries(areaFields).forEach(([a,fields])=>{
+    let filled=0;
+    fields.forEach(f=>{
+      const el=document.querySelector(`[data-field="${f}"]`);
+      const sv=store[a]?.current?.[f]||store[a]?.draft?.[f]||'';
+      if(el?.value?.trim()||sv.trim())filled++;
+    });
+    totalFilled+=filled;totalFields+=fields.length;
+    const pct=fields.length>0?Math.round(filled/fields.length*100):0;
+    setEl(`met-${a}-pct`,pct+'%');
+    setEl(`met-${a}-count`,`${filled}/${fields.length} campos`);
+    const bar=document.getElementById(`met-${a}-bar`);
+    if(bar)bar.style.width=pct+'%';
+  });
+
+  // ── Health Score ──
+  const prioScore=totalPrioGlobal>0?Math.round(gDone/totalPrioGlobal*100):0;
+  const pautaScore=totalFields>0?Math.round(totalFilled/totalFields*100):0;
+  const dailysCount=store._meta?.dailysCount||0;
+  const dailyScore=Math.min(dailysCount*20,100);
+  const healthScore=Math.round(prioScore*0.4+pautaScore*0.4+dailyScore*0.2);
+  
+  setEl('health-score',healthScore+'%');
+  const ring=document.getElementById('health-ring');
+  if(ring)ring.setAttribute('stroke-dasharray',`${healthScore}, ${100-healthScore}`);
+  const hlbl=document.getElementById('health-label');
+  if(hlbl){
+    if(healthScore>=80)hlbl.textContent='🎯 Excelente! Equipe performando muito bem.';
+    else if(healthScore>=50)hlbl.textContent='📈 Bom progresso. Continue registrando!';
+    else if(healthScore>0)hlbl.textContent='⚠️ Atenção: preencha mais pautas e conclua prioridades.';
+    else hlbl.textContent='💡 Comece preenchendo pautas para ver seu score.';
+  }
+  
+  const breakdown=document.getElementById('health-breakdown');
+  if(breakdown){
+    const items=[
+      {label:'Prioridades Concluídas',pct:prioScore,color:'var(--primary)',weight:'40%',detail:`${gDone}/${totalPrioGlobal} concluídas`},
+      {label:'Pautas Preenchidas',pct:pautaScore,color:'#38bdf8',weight:'40%',detail:`${totalFilled}/${totalFields} campos`},
+      {label:'Disciplina de Daily',pct:dailyScore,color:'#a78bfa',weight:'20%',detail:`${dailysCount} daily's finalizadas`}
+    ];
+    breakdown.innerHTML=items.map(i=>`<div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${i.color};"></div>
+          <span style="font-size:13px;font-weight:600;color:var(--text);">${i.label}</span>
+          <span style="font-size:10px;padding:2px 6px;border-radius:4px;background:var(--surface3);color:var(--muted);font-weight:600;">peso ${i.weight}</span>
+        </div>
+        <span style="font-size:14px;font-weight:700;color:${i.color};">${i.pct}%</span>
+      </div>
+      <div style="height:6px;border-radius:3px;background:var(--surface3);overflow:hidden;">
+        <div style="width:${i.pct}%;height:100%;border-radius:3px;background:${i.color};transition:width .8s ease;"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">${i.detail}</div>
+    </div>`).join('');
+  }
+
+  // ── R&S Pipeline ──
   const rsRows=document.querySelectorAll('#rs-tbody tr');
   let abertas=0,fechadas=0,altoRisco=0,medioRisco=0,baixoRisco=0;
   rsRows.forEach(tr=>{
@@ -1621,8 +1750,6 @@ function updateMetrics(){
   });
   setEl('rs-met-abertas',abertas);
   setEl('rs-met-fechadas',fechadas);
-
-  // onboarding via campo de texto
   const rs=store.rs?.current||store.rs?.draft||{};
   const onbEl=document.querySelector('[data-field="rs_onboarding"]');
   const onbVal=onbEl?.value?.trim()||rs['rs_onboarding']?.trim()||'';
@@ -1631,7 +1758,7 @@ function updateMetrics(){
   setEl('rs-risco-medio',medioRisco);
   setEl('rs-risco-baixo',baixoRisco);
 
-  // ── BLOCO 4: BP Alertas ──
+  // ── BP Alertas ──
   const bp=store.bp?.current||store.bp?.draft||{};
   const bpAlerts=(prefix,containerId)=>{
     const checks=[
@@ -1652,10 +1779,8 @@ function updateMetrics(){
   bpAlerts('bp_ag','bp-alerts-ag');
   bpAlerts('bp_cf','bp-alerts-cf');
 
-  // ── BLOCO 5: Histórico de Dailys ──
-  const dailysCount=store._meta?.dailysCount||0;
+  // ── Histórico de Dailys ──
   setEl('hist-mes',dailysCount);
-  // Última daily: pega a data mais recente entre todas as áreas
   let lastDate=null;
   ['dp','bp','rs','est'].forEach(a=>{
     const hist=store[a]?.history;
@@ -1668,18 +1793,45 @@ function updateMetrics(){
     }
   });
   setEl('hist-last-data',lastDate?lastDate.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):'—');
-  // Próxima daily: próxima sexta-feira
   const hoje=new Date();
-  const diaSemana=hoje.getDay();// 0=dom,5=sex
+  const diaSemana=hoje.getDay();
   const diasAteSexta=diaSemana<=5?(5-diaSemana)||7:6;
   const proxSexta=new Date(hoje);
   proxSexta.setDate(hoje.getDate()+(diasAteSexta===0?7:diasAteSexta));
   setEl('hist-proxima',proxSexta.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}));
 
-  // ── KPIs do Overview (manter funcionando) ──
+  // ── Prioridades Arquivadas ──
+  const archivedEl=document.getElementById('archived-prios');
+  if(archivedEl){
+    const sm={pending:{c:'status-pending',l:'Pendente'},progress:{c:'status-progress',l:'Andamento'},done:{c:'status-done',l:'Concluído'}};
+    let allArchived=[];
+    ['dp','bp','rs','est'].forEach(a=>{
+      (store[a]?.prioHistory||[]).forEach(p=>{
+        allArchived.push({...p,area:a});
+      });
+    });
+    allArchived.sort((a,b)=>new Date(b.archivedAt)-new Date(a.archivedAt));
+    if(!allArchived.length){
+      archivedEl.innerHTML='<div style="color:var(--muted);font-size:13px;font-style:italic;padding:12px 0;">Nenhuma prioridade arquivada. Use o botão "Nova Prioridade" para arquivar.</div>';
+    }else{
+      archivedEl.innerHTML=allArchived.slice(0,15).map(p=>{
+        const st=sm[p.status]||sm.pending;
+        return`<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface2);border-radius:12px;">
+          <div style="width:28px;height:28px;border-radius:8px;background:${AREAS[p.area].color}20;color:${AREAS[p.area].color};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">${p.num}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:500;color:var(--text);word-break:break-word;">${p.text}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;">${AREAS[p.area].short} · ${p.date||'—'}</div>
+          </div>
+          <span class="prio-status ${st.c}">${st.l}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // ── KPIs do Overview ──
   let totalPrios=0,donePrios=0,filledPautas=0;
   const allPautaFields=['dp_admissoes','dp_rescisoes','dp_ferias','dp_alteracoes','dp_folha','dp_ajustes','dp_prazos','dp_outros','dp_notificacoes','dp_documentacao','dp_reclamacoes','dp_problemas','bp_ag_clima','bp_ag_percepcoes','bp_ag_conflitos','bp_ag_movimentacoes','bp_ag_promocoes','bp_ag_desligamentos','bp_cf_clima','bp_cf_percepcoes','bp_cf_conflitos','bp_cf_movimentacoes','bp_cf_promocoes','bp_cf_desligamentos','rs_vagas_abertas','rs_vagas_fechadas','rs_onboarding','rs_info_importantes','rs_outros','est_projetos','est_marcos','est_kr_info','est_kr_demandas','est_anotacoes'];
-  allPautaFields.forEach(f=>{const el=document.querySelector(`[data-field="${f}"]`);if(el?.value?.trim())filledPautas++;});
+  allPautaFields.forEach(f=>{const el=document.querySelector(`[data-field="${f}"]`);const area=f.split('_')[0];const storeVal=store[area]?.current?.[f]||store[area]?.draft?.[f]||'';if(el?.value?.trim()||storeVal.trim())filledPautas++;});
   ['dp','bp','rs','est'].forEach(a=>{[1,2,3].forEach(n=>{const field=`${a}_p${n}`;const inp=document.querySelector(`[data-field="${field}"]`);const dv=store[a]?.current||store[a]?.draft||{};const val=inp?.value?.trim()||dv[field]?.trim();if(val){totalPrios++;if(prioStatus[field]==='done')donePrios++;}});});
   const kd=document.getElementById('kpi-daily');if(kd)kd.textContent=dailysCount;
   const kp=document.getElementById('kpi-pautas');if(kp)kp.textContent=`${filledPautas} / ${allPautaFields.length}`;
@@ -1915,16 +2067,17 @@ window.finalizarDaily=async()=>{
   localStorage.setItem('rh-store',JSON.stringify(store));
   try{await setDoc(doc(db,'rh-daily','_meta'),{dailysCount:store._meta.dailysCount},{merge:true});}catch(e){}
 
-  // Resetar campos
+  // Resetar campos de pautas (NÃO prioridades)
   ['dp','bp','rs','est'].forEach(a=>{
-    document.querySelectorAll(`#form-${a} [data-field]`).forEach(el=>el.value='');
+    document.querySelectorAll(`#form-${a} [data-field]`).forEach(el=>{
+      // Preservar campos de prioridade
+      if(el.dataset.field.match(/^(dp|bp|rs|est)_p[123]$/))return;
+      el.value='';
+    });
     if(a==='rs')document.getElementById('rs-tbody').innerHTML='';
     store[a].draft=null;store[a].current=null;
   });
-  // Resetar status de prioridades
-  prioStatus={};
-  localStorage.setItem('rh-prio-status',JSON.stringify(prioStatus));
-  document.querySelectorAll('.psbtn').forEach(b=>b.className='psbtn');
+  // NÃO resetar prioridades — elas persistem para a próxima semana
 
   closeDailyModal();
   updateOverview();renderHistory();renderPautaHistory();updateMetrics();updateRSIndicators();
@@ -1987,7 +2140,6 @@ window.clearAllData=async()=>{
 
   // Resetar estado em memória
   store={};
-  kanban={dp:{todo:[],doing:[],done:[]},bp:{todo:[],doing:[],done:[]},rs:{todo:[],doing:[],done:[]},est:{todo:[],doing:[],done:[]}};
   prioStatus={};
 
   // Limpar campos da tela
@@ -1997,7 +2149,7 @@ window.clearAllData=async()=>{
   });
   document.querySelectorAll('.psbtn').forEach(b=>b.className='psbtn');
 
-  updateOverview();renderHistory();renderPautaHistory();updateMetrics();renderKanban();
+  updateOverview();renderHistory();renderPautaHistory();updateMetrics();
   toast('Todos os dados foram excluídos ✓');
 };
 
@@ -2054,7 +2206,7 @@ window.generateAIInsights=()=>{
 // EXPORT
 window.exportData=()=>{
   let csv='Área,Tipo,Tarefa,Status,Data\n';
-  ['dp','bp','rs','est'].forEach(a=>['todo','doing','done'].forEach(c=>getK(a,c).forEach(t=>csv+=`"${AREAS[a].name}","Demanda","${t}","${c}","${new Date().toLocaleDateString('pt-BR')}"\n`)));
+  
   ['dp','bp','rs','est'].forEach(a=>{
     const d=store[a]?.current||store[a]?.draft||{};
     [1,2,3].forEach(n=>{
@@ -2115,7 +2267,7 @@ finishLogin=name=>{
 // ─── UNSAVED CHANGES WARNING ───
 let hasUnsavedChanges=false;
 document.addEventListener('input',e=>{
-  if(e.target.closest('.aform')||e.target.closest('.kanban-board')){
+  if(e.target.closest('.aform')){
     hasUnsavedChanges=true;
     const bar=document.querySelector('.save-bar');
     if(bar)bar.classList.add('has-changes');
