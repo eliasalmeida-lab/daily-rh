@@ -1292,29 +1292,29 @@ button:focus-visible,.nav-btn:focus-visible,.atab:focus-visible,.login-user-chip
       </div>
     </div>
     <div class="admin-card">
-      <div class="admin-card-title"><span>🎛️</span> Configurações de Exibição</div>
+      <div class="admin-card-title"><span>📊</span> Estatísticas do Sistema</div>
       <div class="admin-toggle">
-        <span class="admin-toggle-label">Mostrar KPIs no Overview</span>
-        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+        <span class="admin-toggle-label">Daily's Finalizadas</span>
+        <span class="legend-val" id="admin-dailys-count">0</span>
       </div>
       <div class="admin-toggle">
-        <span class="admin-toggle-label">Mostrar Histórico</span>
-        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+        <span class="admin-toggle-label">Pautas Registradas</span>
+        <span class="legend-val" id="admin-pautas-count">0</span>
       </div>
       <div class="admin-toggle">
-        <span class="admin-toggle-label">Mostrar Gráficos</span>
-        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+        <span class="admin-toggle-label">Prioridades Ativas</span>
+        <span class="legend-val" id="admin-prios-count">0</span>
       </div>
       <div class="admin-toggle">
-        <span class="admin-toggle-label">Modo Compacto</span>
-        <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+        <span class="admin-toggle-label">Prioridades Arquivadas</span>
+        <span class="legend-val" id="admin-archived-count">0</span>
       </div>
     </div>
     <div class="admin-card">
       <div class="admin-card-title"><span>💾</span> Dados e Backup</div>
       <button class="btn-export" style="width:100%;margin-bottom:12px" onclick="exportData()">📥 Exportar Histórico Completo</button>
       <button class="btn-draft" style="width:100%;margin-bottom:12px" onclick="clearLocalData()">🗑️ Limpar Cache Local</button>
-      <button class="btn-fin" style="width:100%;margin-bottom:12px" onclick="toast('Dados sincronizados ✓')">🔄 Sincronizar com Firebase</button>
+      <button class="btn-fin" style="width:100%;margin-bottom:12px" onclick="syncFirebase()">🔄 Sincronizar com Firebase</button>
       <button onclick="clearAllData()" style="width:100%;padding:12px 28px;border-radius:14px;border:2px solid rgba(248,113,113,.5);background:rgba(248,113,113,.08);color:#f87171;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .25s;" onmouseover="this.style.background='rgba(248,113,113,.15)'" onmouseout="this.style.background='rgba(248,113,113,.08)'">🗑️ Excluir Todos os Dados</button>
     </div>
     <div class="admin-card">
@@ -1467,10 +1467,12 @@ async function init(){
 }
 
 window.showScreen=s=>{
+  if(s==='admin'&&!isAdmin){toast('⛔ Acesso restrito a administradores.');return;}
   document.querySelectorAll('.screen').forEach(sc=>sc.classList.remove('active'));
   document.getElementById('screen-'+s).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   const nb=document.getElementById('nav-'+s);if(nb)nb.classList.add('active');
+  if(s==='admin')updateAdminStats();
 };
 
 window.toggleTheme=()=>{const cur=document.documentElement.getAttribute('data-theme');const next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);localStorage.setItem('theme',next);setThemeIcon();};
@@ -2261,6 +2263,9 @@ finishLogin=name=>{
   if(name?.toLowerCase()==='elias'){
     const ma=document.getElementById('mnav-admin');
     if(ma)ma.style.display='';
+  }else{
+    const ma=document.getElementById('mnav-admin');
+    if(ma)ma.style.display='none';
   }
 };
 
@@ -2303,7 +2308,56 @@ document.addEventListener('keydown',e=>{
     closeDailyModal();closeHistoryModal();closeCrop();
     if(document.getElementById('mobile-drawer')?.classList.contains('open'))toggleMobileMenu();
   }
-});
+// ─── SYNC FIREBASE ───
+window.syncFirebase=async()=>{
+  toast('Sincronizando dados...');
+  try{
+    await loadFb();
+    // Re-save local data to Firebase
+    for(const a of['dp','bp','rs','est']){
+      const d=store[a];if(!d)continue;
+      if(d.current)await fbSet(a,'current',d.current);
+      if(d.draft)await fbSet(a,'draft',d.draft);
+      if(d.prioHistory)await fbSet(a,'prioHistory',d.prioHistory);
+    }
+    if(store._meta){
+      await setDoc(doc(db,'rh-daily','_meta'),store._meta,{merge:true});
+    }
+    updateOverview();renderHistory();renderPautaHistory();updateMetrics();updateRSIndicators();
+    toast('Dados sincronizados com Firebase ✓');
+  }catch(e){
+    console.error('Erro ao sincronizar:',e);
+    toast('Erro ao sincronizar: '+e.message);
+  }
+};
+
+// ─── ADMIN STATS ───
+function updateAdminStats(){
+  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  // Daily's count
+  setEl('admin-dailys-count',store._meta?.dailysCount||0);
+  // Pautas count
+  let pautasCount=0;
+  ['dp','bp','rs','est'].forEach(a=>{pautasCount+=(store[a]?.pautaHistory||[]).length;});
+  setEl('admin-pautas-count',pautasCount);
+  // Active priorities
+  let activePrios=0;
+  ['dp','bp','rs','est'].forEach(a=>{
+    [1,2,3].forEach(n=>{
+      const field=`${a}_p${n}`;
+      const inp=document.querySelector(`[data-field="${field}"]`);
+      const d=store[a]?.current||store[a]?.draft||{};
+      if(inp?.value?.trim()||d[field]?.trim())activePrios++;
+    });
+  });
+  setEl('admin-prios-count',activePrios);
+  // Archived priorities
+  let archived=0;
+  ['dp','bp','rs','est'].forEach(a=>{archived+=(store[a]?.prioHistory||[]).length;});
+  setEl('admin-archived-count',archived);
+  // Last update
+  setEl('last-update',new Date().toLocaleDateString('pt-BR'));
+}
 </script>
 </body>
 </html>
