@@ -850,9 +850,9 @@ async function loadFb(){
 // ⚠️ Atualize os e-mails abaixo para os cadastrados no Firebase Auth Console
 const USER_MAP={
   'elias.almeida@graodireto.com.br':{name:'Elias',admin:true},
-  'amanda.ferreira@graodireto.com.br':{name:'Amanda',admin:false},
-  'melissa.pereira@graodireto.com.br':{name:'Melissa',admin:false},
-  'ursula@graodireto.com.br':{name:'Ursula',admin:false},
+  'amanda@graodireto.com':{name:'Amanda',admin:false},
+  'melissa@graodireto.com':{name:'Melissa',admin:false},
+  'ursula@graodireto.com':{name:'Ursula',admin:false},
 };
 
 let _loginInProgress=false;
@@ -1138,4 +1138,167 @@ function updateMetrics(){
   let gPending=0,gProgress=0,gDone=0;const areaStats={};
   ['dp','bp','rs','est'].forEach(a=>{const d=store[a]?.current||store[a]?.draft||{};let pending=0,progress=0,done=0;[1,2,3].forEach(n=>{const field=`${a}_p${n}`;const inp=document.querySelector(`[data-field="${field}"]`);const val=inp?.value?.trim()||d[field]?.trim();if(val){const s=prioStatus[field]||'pending';if(s==='pending'){pending++;gPending++;}else if(s==='progress'){progress++;gProgress++;}else{done++;gDone++;}}});areaStats[a]={pending,progress,done,total:pending+progress+done};});
   const barsChart=document.getElementById('prio-bars-chart');
-  if(barsChart){const colors={dp:'#f97316',bp:'#3b82f6',rs:'#8b5cf6',est:'#22c55e'};barsChart.innerHTML=['dp','bp','rs','est'].map(a=>{const s=areaStats[a];const pct=s.total>0?Math.round(s.done/s.total*100):0;return`<div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div style="display:flex;align-items:center;gap:8px;"><div style="width:10px;height:10px;border-radius:50%;background:${colors[a]}"></div><span style="font-size:13px;font-weight:700;color:var(--text);">${AREAS[a].short} · ${getAreaPerson(a)}</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--muted);">${s.done}/${s.total}</span><span style="font-size:14px;font-weight:800;color:${colors[a]};">${pct}%</span></div></div><div style="height:10px;border-radius:5px;background:var(--surface3);overflow:hidden;display:flex;"><div style="width:${s.total>0?Math.round(s.done/s.total*100):0}%;background:${colors[a]};border-radius:5px 0 0 5px;transition:width .8s ease;"></div><div style="width:${s.total>0?Math.round(s.progress/s.total*100):0}%;background:${colors[a]}55;transition:width .8s ease;"></div></div><div style="display:flex;gap:14px;margin-top:5px;"><span style="font-size:10px;color:#d97706;font-weight:700;">⏳ ${s.pending}</span><span style="font-size:10px;color:#2563eb;font-weight:700;">
+  if(barsChart){const colors={dp:'#f97316',bp:'#3b82f6',rs:'#8b5cf6',est:'#22c55e'};barsChart.innerHTML=['dp','bp','rs','est'].map(a=>{const s=areaStats[a];const pct=s.total>0?Math.round(s.done/s.total*100):0;return`<div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div style="display:flex;align-items:center;gap:8px;"><div style="width:10px;height:10px;border-radius:50%;background:${colors[a]}"></div><span style="font-size:13px;font-weight:700;color:var(--text);">${AREAS[a].short} · ${getAreaPerson(a)}</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--muted);">${s.done}/${s.total}</span><span style="font-size:14px;font-weight:800;color:${colors[a]};">${pct}%</span></div></div><div style="height:10px;border-radius:5px;background:var(--surface3);overflow:hidden;display:flex;"><div style="width:${s.total>0?Math.round(s.done/s.total*100):0}%;background:${colors[a]};border-radius:5px 0 0 5px;transition:width .8s ease;"></div><div style="width:${s.total>0?Math.round(s.progress/s.total*100):0}%;background:${colors[a]}55;transition:width .8s ease;"></div></div><div style="display:flex;gap:14px;margin-top:5px;"><span style="font-size:10px;color:#d97706;font-weight:700;">⏳ ${s.pending}</span><span style="font-size:10px;color:#2563eb;font-weight:700;">🔄 ${s.progress}</span><span style="font-size:10px;color:var(--primary-dark);font-weight:700;">✅ ${s.done}</span></div></div>`;}).join('');}
+
+  // Donut chart
+  const total=gPending+gProgress+gDone;
+  setV('prio-donut-total',total);setV('prio-donut-pending',gPending);setV('prio-donut-progress',gProgress);setV('prio-donut-done',gDone);
+  const donut=document.getElementById('prio-donut');
+  if(donut&&total>0){
+    const r=14,circ=2*Math.PI*r,pPct=gPending/total,prPct=gProgress/total,dPct=gDone/total;
+    const pLen=circ*pPct,prLen=circ*prPct,dLen=circ*dPct;
+    const pOff=0,prOff=pLen,dOff=pLen+prLen;
+    donut.innerHTML=`<circle cx="18" cy="18" r="${r}" fill="none" stroke="var(--surface3)" stroke-width="4"/>
+      <circle cx="18" cy="18" r="${r}" fill="none" stroke="#fbbf24" stroke-width="4" stroke-dasharray="${pLen} ${circ-pLen}" stroke-dashoffset="0"/>
+      <circle cx="18" cy="18" r="${r}" fill="none" stroke="#38bdf8" stroke-width="4" stroke-dasharray="${prLen} ${circ-prLen}" stroke-dashoffset="${-prOff}"/>
+      <circle cx="18" cy="18" r="${r}" fill="none" stroke="#7CB342" stroke-width="4" stroke-dasharray="${dLen} ${circ-dLen}" stroke-dashoffset="${-(dOff)}"/>`;
+  }
+
+  // Pauta fill metrics
+  const fieldCounts={dp:10,bp:13,rs:5,est:5};
+  ['dp','bp','rs','est'].forEach(a=>{
+    const d=store[a]?.current||store[a]?.draft||{};
+    const fields=FIELD_MAP[a].flatMap(s=>s.fields.map(f=>f.key));
+    const filled=fields.filter(k=>d[k]?.trim()).length;
+    const total=fieldCounts[a];
+    const pct=total>0?Math.round(filled/total*100):0;
+    const bar=document.getElementById(`met-${a}-bar`);if(bar)bar.style.width=pct+'%';
+    const pctEl=document.getElementById(`met-${a}-pct`);if(pctEl)pctEl.textContent=pct+'%';
+    const cnt=document.getElementById(`met-${a}-count`);if(cnt)cnt.textContent=`${filled}/${total} campos`;
+  });
+
+  // KPIs
+  const hist=[];['dp','bp','rs','est'].forEach(a=>(store[a]?.history||[]).forEach(h=>hist.push(h)));
+  const byDate={};hist.forEach(h=>{const d=h.date||'';if(!byDate[d])byDate[d]=true;});
+  const dailyCount=store._meta?.dailysCount||Object.keys(byDate).length;
+  setV('kpi-daily',dailyCount);setV('hist-mes',dailyCount);
+  setV('admin-dailys-count',dailyCount);
+
+  const allFields=ALL_PAUTA_FIELDS;
+  let filledCount=0;
+  ['dp','bp','rs','est'].forEach(a=>{const d=store[a]?.current||store[a]?.draft||{};allFields.forEach(k=>{if(d[k]?.trim())filledCount++;});});
+  setV('kpi-pautas',`${filledCount} / ${allFields.length}`);
+  setV('admin-pautas-count',filledCount);
+
+  const allPrios=[];['dp','bp','rs','est'].forEach(a=>{[1,2,3].forEach(n=>{const f=`${a}_p${n}`;const inp=document.querySelector(`[data-field="${f}"]`);const val=inp?.value?.trim()||(store[a]?.current||store[a]?.draft||{})[f]?.trim();if(val)allPrios.push({field:f,status:prioStatus[f]||'pending'});});});
+  const doneCount=allPrios.filter(p=>p.status==='done').length;
+  const conclusao=allPrios.length>0?Math.round(doneCount/allPrios.length*100):0;
+  setV('kpi-conclusao',conclusao+'%');
+  setV('admin-prios-count',allPrios.filter(p=>p.status!=='done').length);
+
+  // Health score
+  const pautaScore=allFields.length>0?Math.round(filledCount/allFields.length*100):0;
+  const prioScore=allPrios.length>0?Math.round(doneCount/allPrios.length*100):0;
+  const healthScore=Math.round((pautaScore+prioScore)/2);
+  const ring=document.getElementById('health-ring');
+  if(ring)ring.setAttribute('stroke-dasharray',`${healthScore}, 100`);
+  setV('health-score',healthScore+'%');
+  const lbl=document.getElementById('health-label');
+  if(lbl)lbl.textContent=healthScore>=80?'Excelente 🌟':healthScore>=60?'Bom 👍':healthScore>=40?'Regular ⚠️':'Precisa atenção 🔴';
+
+  const breakdown=document.getElementById('health-breakdown');
+  if(breakdown){breakdown.innerHTML=[
+    {l:'Preenchimento de Pautas',v:pautaScore,c:'#38bdf8'},
+    {l:'Conclusão de Prioridades',v:prioScore,c:'#7CB342'},
+  ].map(({l,v,c})=>`<div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:12px;color:var(--text2);">${l}</span><span style="font-size:13px;font-weight:800;color:${c};">${v}%</span></div><div style="height:7px;border-radius:4px;background:var(--surface3);overflow:hidden;"><div style="width:${v}%;height:100%;background:${c};border-radius:4px;transition:width .8s ease;"></div></div></div>`).join('');}
+
+  // RS metrics
+  const rsVagas=store.rs?.current?.rs_vagas||store.rs?.draft?.rs_vagas||[];
+  const abertas=rsVagas.filter(v=>!['Contratado','Onboarding'].includes(v.etapa)).length;
+  const fechadas=rsVagas.filter(v=>v.etapa==='Contratado').length;
+  const onboard=rsVagas.filter(v=>v.etapa==='Onboarding').length;
+  setV('rs-met-abertas',abertas);setV('rs-met-fechadas',fechadas);
+  const onbEl=document.getElementById('rs-met-onboard');if(onbEl)onbEl.textContent=onboard||'—';
+  const alto=rsVagas.filter(v=>(v.risco||'').toLowerCase().includes('alto')).length;
+  const medio=rsVagas.filter(v=>(v.risco||'').toLowerCase().includes('médio')||v.risco?.toLowerCase().includes('medio')).length;
+  setV('rs-risco-alto',alto);setV('rs-risco-medio',medio);setV('rs-risco-baixo',rsVagas.length-alto-medio);
+
+  // BP alerts
+  ['ag','cf'].forEach(emp=>{
+    const el=document.getElementById(`bp-alerts-${emp}`);if(!el)return;
+    const d=store.bp?.current||store.bp?.draft||{};
+    const fields=[
+      {k:`bp_${emp}_clima`,l:'Clima e Engajamento'},
+      {k:`bp_${emp}_conflitos`,l:'Conflitos/Tensões'},
+      {k:`bp_${emp}_desligamentos`,l:'Possíveis Desligamentos'},
+    ];
+    const alerts=fields.filter(f=>d[f.k]?.trim());
+    el.innerHTML=alerts.length?alerts.map(f=>`<div class="bp-alert-row"><div class="bp-alert-dot" style="background:#f59e0b"></div><span class="bp-alert-txt">${f.l}</span><span class="bp-alert-badge" style="background:rgba(245,158,11,.12);color:#d97706">Atenção</span></div>`).join(''):`<div style="color:var(--muted);font-size:13px;font-style:italic;">Sem alertas registrados.</div>`;
+  });
+
+  // Archived prios
+  const archEl=document.getElementById('archived-prios');
+  if(archEl){
+    const all=[];['dp','bp','rs','est'].forEach(a=>(store[a]?.prioHistory||[]).forEach(p=>all.push({...p,area:a})));
+    const colors={dp:'#f97316',bp:'#3b82f6',rs:'#8b5cf6',est:'#22c55e'};
+    archEl.innerHTML=all.length?all.slice(0,20).map(p=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface2);border-radius:12px;"><div style="width:8px;height:8px;border-radius:50%;background:${colors[p.area]};flex-shrink:0;"></div><div style="flex:1;font-size:13px;color:var(--text);">${p.text}</div><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;background:var(--surface3);color:var(--muted);">${AREAS[p.area].short} · ${p.date||'—'}</span></div>`).join(''):`<div style="color:var(--muted);font-size:13px;font-style:italic;padding:12px 0;">Nenhuma prioridade arquivada ainda.</div>`;
+    setV('admin-archived-count',all.length);
+  }
+
+  // Proxima daily (próxima sexta)
+  const now=new Date();const day=now.getDay();const daysToFri=day<=5?(5-day):(12-day);
+  const fri=new Date(now);fri.setDate(now.getDate()+daysToFri);
+  setV('hist-proxima',fri.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}));
+
+  // Ultima daily
+  const allDates=[];['dp','bp','rs','est'].forEach(a=>(store[a]?.history||[]).forEach(h=>{if(h.date)allDates.push(h.date);}));
+  if(allDates.length){
+    const sorted=allDates.sort((a,b)=>{const pa=a.split('/').reverse().join('-'),pb=b.split('/').reverse().join('-');return pb.localeCompare(pa);});
+    setV('hist-last-data',sorted[0]);
+  }
+}
+
+// ─── RS INDICATORS ────────────────────────────────────────────────────────
+function updateRSIndicators(){
+  const rows=document.querySelectorAll('#rs-tbody tr');
+  const abertas=[...rows].filter(tr=>{const sel=tr.querySelector('select');return sel&&!['Contratado','Onboarding'].includes(sel.value);}).length;
+  const fechadas=[...rows].filter(tr=>{const sel=tr.querySelector('select');return sel&&sel.value==='Contratado';}).length;
+  const onboard=[...rows].filter(tr=>{const sel=tr.querySelector('select');return sel&&sel.value==='Onboarding';}).length;
+  setEl('rs-ind-abertas',abertas);setEl('rs-ind-fechadas',fechadas);setEl('rs-ind-onboarding',onboard);
+}
+
+// ─── ADMIN ────────────────────────────────────────────────────────────────
+function updateAdminStats(){updateMetrics();}
+window.clearLocalData=()=>{localStorage.clear();toast('Cache local limpo','🗑️');};
+window.syncFirebase=async()=>{await loadFb();toast('Sincronizado com Firebase','🔄');};
+window.clearAllData=async()=>{
+  if(!confirm('ATENÇÃO: Isso vai apagar TODOS os dados do Firebase permanentemente. Tem certeza?'))return;
+  if(!confirm('Segunda confirmação: todos os históricos e pautas serão perdidos para sempre. Continuar?'))return;
+  try{
+    for(const a of['dp','bp','rs','est']){
+      await setDoc(doc(db,'rh-daily',a),{},{});
+      const hs=await getDocs(collection(db,'rh-daily',a,'history'));
+      for(const hd of hs.docs)await deleteDoc(hd.ref);
+    }
+    store={};localStorage.clear();
+    updateOverview();renderHistory();renderPautaHistory();updateMetrics();
+    toast('Todos os dados foram excluídos','🗑️');
+  }catch(e){toast('Erro ao excluir: '+e.message,'❌');}
+};
+
+// ─── EXPORT ───────────────────────────────────────────────────────────────
+window.exportData=()=>{
+  const rows=[['Data','Área','Campo','Valor']];
+  ['dp','bp','rs','est'].forEach(a=>{
+    (store[a]?.history||[]).forEach(h=>{
+      FIELD_MAP[a].forEach(sec=>sec.fields.forEach(f=>{if(h[f.key]?.trim())rows.push([h.date||'',AREAS[a].short,f.label,h[f.key]]);}));
+    });
+  });
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='rh-daily-historico.csv';a.click();
+};
+window.exportHistory=window.exportData;
+window.exportPDF=()=>{window.print();};
+
+// ─── KEYBOARD SHORTCUTS ───────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='d'){e.preventDefault();window.openDailyModal();}
+  if(e.key==='Escape'){
+    document.querySelectorAll('.overlay.active').forEach(o=>o.classList.remove('active'));
+    closePresentation();
+  }
+});
+
+</script>
+</body>
+</html>
