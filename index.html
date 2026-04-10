@@ -765,7 +765,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,deleteDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,deleteDoc,onSnapshot}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────
 const fbCfg={apiKey:"AIzaSyA84hE7DlSkp-KqAi72H1KXWVEx-bw_sqA",authDomain:"daily-rh.firebaseapp.com",projectId:"daily-rh",storageBucket:"daily-rh.firebasestorage.app",messagingSenderId:"933947456380",appId:"1:933947456380:web:317245d871e259a4e082f9"};
@@ -829,15 +829,34 @@ async function fbSet(a,type,d){try{await setDoc(doc(db,'rh-daily',a),{[type]:d},
 async function fbHist(a,d){try{await addDoc(collection(db,'rh-daily',a,'history'),d);}catch(e){console.warn('[fbHist]',e);}}
 async function loadFb(){
   try{
-    for(const a of['dp','bp','rs','est']){
-      const d=await getDoc(doc(db,'rh-daily',a));
-      if(!store[a])store[a]={};
-      if(d.exists()){Object.assign(store[a],d.data());if(!store[a].history)store[a].history=[];}
-      const hs=await getDocs(collection(db,'rh-daily',a,'history'));
-      store[a].history=[];hs.forEach(hd=>store[a].history.push(hd.data()));
-      store[a].history.sort((x,y)=>new Date(y.savedAt)-new Date(x.savedAt));
-    }
-    try{const m=await getDoc(doc(db,'rh-daily','_meta'));if(m.exists()){if(!store._meta)store._meta={};Object.assign(store._meta,m.data());}}catch(e){}
+    ['dp','bp','rs','est'].forEach(a => {
+      onSnapshot(doc(db, 'rh-daily', a), (dd) => {
+        if(!store[a]) store[a] = {};
+        if(dd.exists()){
+          const newData = dd.data();
+          store[a].draft = newData.draft || null;
+          store[a].current = newData.current || null;
+          store[a].pautaHistory = newData.pautaHistory || [];
+          store[a].prioHistory = newData.prioHistory || [];
+        }
+        if(document.getElementById('app-container').classList.contains('active')){
+          updateOverview(); updateMetrics(); renderPautaHistory();
+          // Restaura do banco somente se quem estiver usando NÃO tiver começado a digitar por cima
+          if(!dirtyTabs.has(a) && curTab === a) restoreForm(a);
+          localStorage.setItem('rh-store',JSON.stringify(store));
+        }
+      });
+      onSnapshot(collection(db, 'rh-daily', a, 'history'), (snap) => {
+        if(!store[a]) store[a] = {};
+        store[a].history = snap.docs.map(hd => hd.data()).sort((x,y)=>new Date(y.savedAt)-new Date(x.savedAt));
+        if(document.getElementById('app-container').classList.contains('active')) {
+          renderHistory(); updateMetrics();
+        }
+      });
+    });
+    onSnapshot(doc(db, 'rh-daily', '_meta'), (m) => {
+      if(m.exists()){if(!store._meta)store._meta={};Object.assign(store._meta,m.data()); updateMetrics();}
+    });
   }catch(e){
     console.warn('[loadFb] Using localStorage fallback:',e);
     const lc=localStorage.getItem('rh-store');if(lc)store=JSON.parse(lc);
@@ -1067,12 +1086,24 @@ window.finalizarDaily=async()=>{
   if(!confirm('Deseja finalizar a Daily desta semana? Os campos de pauta serão resetados.'))return;
   const date=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
   const areasData={};
-  ['dp','bp','rs','est'].forEach(a=>{const stored=store[a]?.current||store[a]?.draft||{};const live={};document.querySelectorAll(`#form-${a} [data-field]`).forEach(el=>live[el.dataset.field]=el.value||'');areasData[a]={...stored,...live};if(a==='rs'){const rows=[];document.querySelectorAll('#rs-tbody tr').forEach(tr=>{const c=tr.querySelectorAll('input,select');if(c.length>=7)rows.push({time:c[0].value,area:c[1].value,gestor:c[2].value,vaga:c[3].value,etapa:c[4].value,tempo:c[5].value,risco:c[6].value});});areasData[a].rs_vagas=rows.length?rows:stored.rs_vagas;}});
+  ['dp','bp','rs','est'].forEach(a=>{
+    const stored=store[a]?.current||store[a]?.draft||{};
+    let merged={...stored};
+    if (a === curTab || dirtyTabs.has(a)) {
+      document.querySelectorAll(`#form-${a} [data-field]`).forEach(el=>merged[el.dataset.field]=el.value||'');
+      if(a==='rs'){
+        const rows=[];document.querySelectorAll('#rs-tbody tr').forEach(tr=>{const c=tr.querySelectorAll('input,select');if(c.length>=7)rows.push({time:c[0].value,area:c[1].value,gestor:c[2].value,vaga:c[3].value,etapa:c[4].value,tempo:c[5].value,risco:c[6].value});});
+        merged.rs_vagas=rows.length?rows:stored.rs_vagas;
+      }
+    }
+    areasData[a]=merged;
+  });
   for(const a of['dp','bp','rs','est']){
-    const d={...areasData[a],finalized:true,date,savedAt:new Date().toISOString(),prioStatus:{...prioStatus}};
+    const areaPrios = {};
+    Object.keys(prioStatus).forEach(k => { if(k.startsWith(a)) areaPrios[k] = prioStatus[k]; });
+    const d={...areasData[a],finalized:true,date,savedAt:new Date().toISOString(),prioStatus:areaPrios};
     if(!store[a])store[a]={};if(!store[a].history)store[a].history=[];
-    const td=new Date().toDateString();if(!store[a].history.find(h=>h.savedAt&&new Date(h.savedAt).toDateString()===td)){store[a].history.unshift(d);}
-    store[a].current=d;try{await fbSet(a,'current',d);await fbHist(a,d);}catch(e){}
+    store[a].current=d;try{await fbSet(a,'current',d);await fbSet(a,'draft',null);await fbHist(a,d);}catch(e){}
   }
   if(!store._meta)store._meta={};store._meta.dailysCount=(store._meta.dailysCount||0)+1;
   localStorage.setItem('rh-store',JSON.stringify(store));
