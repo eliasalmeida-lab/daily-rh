@@ -4,7 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Painel RH · Grão Direto</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#22c55e">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js');}</script>
 <style>
 :root{
   --tr:0.28s cubic-bezier(0.25,0.1,0.25,1);
@@ -494,6 +500,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
     <button class="nav-btn" id="nav-metrics" onclick="showScreen('metrics')">📈 Métricas</button>
   </nav>
   <div class="topbar-right">
+    <div id="live-presence-container" style="display:flex;align-items:center;gap:4px;margin-right:12px;"></div>
     <div class="user-chip" id="user-chip">
       <div class="user-chip-avatar" id="user-avatar">E</div>
       <span id="user-name-display">Elias</span>
@@ -866,8 +873,7 @@ async function loadFb(){
 }
 
 // ─── AUTH / LOGIN ─────────────────────────────────────────────────────────
-// ⚠️ Atualize os e-mails abaixo para os cadastrados no Firebase Auth Console
-const USER_MAP={
+let USER_MAP={
   'elias.almeida@graodireto.com.br':{name:'Elias',admin:true},
   'amanda@graodireto.com':{name:'Amanda',admin:false},
   'melissa@graodireto.com':{name:'Melissa',admin:false},
@@ -876,10 +882,19 @@ const USER_MAP={
 
 let _loginInProgress=false;
 
-onAuthStateChanged(auth,usuario=>{
+onAuthStateChanged(auth, async usuario=>{
   if(usuario){
     if(_loginInProgress)return;
     _loginInProgress=true;
+    try {
+      const uSnap = await getDocs(collection(db, 'rh-daily-users'));
+      if(!uSnap.empty) {
+        USER_MAP = {}; 
+        uSnap.forEach(d => USER_MAP[d.id] = d.data());
+      } else {
+        for(let email in USER_MAP) await setDoc(doc(db, 'rh-daily-users', email), USER_MAP[email]);
+      }
+    } catch(e){}
     const u=USER_MAP[usuario.email]||{name:usuario.email.split('@')[0],admin:false};
     finishLogin(u.name,u.admin);
   }else{
@@ -892,6 +907,31 @@ onAuthStateChanged(auth,usuario=>{
     const er=document.getElementById('login-erro');if(er)er.style.display='none';
   }
 });
+
+let myPresenceId = null;
+function startPresence() {
+   myPresenceId = currentUser;
+   const pRef = doc(db, 'rh-daily', '_presence');
+   const updateP = () => { try{ setDoc(pRef, { [myPresenceId]: { tab: curTab, time: Date.now() } }, {merge:true}); }catch(e){} };
+   setInterval(updateP, 15000); updateP();
+   
+   onSnapshot(pRef, snap => {
+     if(snap.exists()) {
+       const data = snap.data();
+       const now = Date.now();
+       const trTab = {'dp':'DP','bp':'BP','rs':'RS','est':'EST','overview':'OV'};
+       let html = '';
+       for(let u in data) {
+         if(u === myPresenceId) continue;
+         if(now - data[u].time < 35000) {
+           html += `<div title="${u} na aba ${trTab[data[u].tab]||data[u].tab}" style="width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;border:2px solid var(--topbar);box-shadow:0 0 0 2px var(--primary-light);margin-left:-8px;z-index:10">${u.substring(0,2).toUpperCase()}</div>`;
+         }
+       }
+       const cont = document.getElementById('live-presence-container');
+       if(cont) cont.innerHTML = html;
+     }
+   });
+}
 
 function finishLogin(name,admin=false){
   if(!name)return;
@@ -912,6 +952,7 @@ function finishLogin(name,admin=false){
     const av=document.getElementById('user-avatar');if(av)av.textContent=name.substring(0,2).toUpperCase();
     if(isAdmin){document.getElementById('admin-btn').classList.add('show');}
     init();
+    startPresence();
   },2500);
 }
 
@@ -974,7 +1015,9 @@ window.toggleMobileMenu=()=>{const drawer=document.getElementById('mobile-drawer
 window.mobileNav=s=>{window.showScreen(s);toggleMobileMenu();};
 
 // ─── TABS ─────────────────────────────────────────────────────────────────
-window.switchTab=a=>{curTab=a;document.querySelectorAll('.atab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+a).classList.add('active');document.querySelectorAll('.aform').forEach(f=>f.classList.remove('active'));document.getElementById('form-'+a).classList.add('active');document.getElementById('sbar-area').innerHTML=`<strong>${AREAS[a].short} — ${getAreaPerson(a)}</strong>`;restoreForm(a);};
+window.switchTab=a=>{curTab=a;document.querySelectorAll('.atab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+a).classList.add('active');document.querySelectorAll('.aform').forEach(f=>f.classList.remove('active'));document.getElementById('form-'+a).classList.add('active');document.getElementById('sbar-area').innerHTML=`<strong>${AREAS[a].short} — ${getAreaPerson(a)}</strong>`;restoreForm(a);
+  if(myPresenceId) { try { setDoc(doc(db, 'rh-daily', '_presence'), { [myPresenceId]: { tab: a, time: Date.now() } }, {merge:true}); } catch(e){} }
+};
 
 // ─── DIRTY STATE ──────────────────────────────────────────────────────────
 function markDirty(a){dirtyTabs.add(a);const dot=document.getElementById('dirty-'+a);if(dot)dot.classList.add('show');const pdot=document.getElementById('dirty-pautas');if(pdot)pdot.classList.add('show');document.getElementById('save-bar')?.classList.add('has-changes');}
@@ -1289,7 +1332,39 @@ function updateRSIndicators(){
 }
 
 // ─── ADMIN ────────────────────────────────────────────────────────────────
-function updateAdminStats(){updateMetrics();}
+async function loadAdminUsers() {
+  const cont = document.querySelector('.admin-users');
+  if(!cont) return;
+  try {
+    const snap = await getDocs(collection(db, 'rh-daily-users'));
+    let html = '';
+    snap.forEach(d => {
+       const u = d.data();
+       html += `<div class="admin-user"><div class="admin-user-av">${u.name.substring(0,2).toUpperCase()}</div><div class="admin-user-info"><div class="admin-user-name">${u.name}</div><div class="admin-user-role">${d.id}</div></div><span class="admin-user-badge ${u.admin?'admin':'user'}">${u.admin?'Admin':'Usuário'}</span><button onclick="rmUser('${d.id}')" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:16px;padding:4px;">🗑</button></div>`;
+    });
+    cont.innerHTML = html + `<button class="btn-new-prio" style="margin-top:10px;width:100%;padding:10px;" onclick="addNewUser()">+ Convidar Novo Usuário</button>`;
+  } catch(e) {}
+}
+
+window.addNewUser = async () => {
+   const email = prompt("E-mail corporativo do usuário (ex: amanda@graodireto.com.br):");
+   if(!email) return;
+   const nome = prompt("Nome de exibição (ex: Amanda):");
+   if(!nome) return;
+   const admin = confirm("O usuário será um Administrador Geral?");
+   await setDoc(doc(db, 'rh-daily-users', email.trim()), { name: nome.trim(), admin: admin });
+   toast('Usuário adicionado', '✅');
+   loadAdminUsers();
+};
+
+window.rmUser = async (email) => {
+   if(!confirm(`Excluir o usuário ${email}? Ele perderá acesso ao painel.`)) return;
+   await deleteDoc(doc(db, 'rh-daily-users', email));
+   toast('Usuário excluído', '🗑️');
+   loadAdminUsers();
+};
+
+function updateAdminStats(){updateMetrics();loadAdminUsers();}
 window.clearLocalData=()=>{localStorage.clear();toast('Cache local limpo','🗑️');};
 window.syncFirebase=async()=>{await loadFb();toast('Sincronizado com Firebase','🔄');};
 window.clearAllData=async()=>{
@@ -1319,7 +1394,23 @@ window.exportData=()=>{
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='rh-daily-historico.csv';a.click();
 };
 window.exportHistory=window.exportData;
-window.exportPDF=()=>{window.print();};
+window.exportPDF=()=>{
+  if(!window.html2pdf){ window.print(); return; }
+  const opt = {
+    margin: [10, 10, 10, 10],
+    filename: 'relatorio-rh.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+  };
+  const appCont = document.getElementById('app-container');
+  toast('Gerando PDF de alta resolução...', '📄', 3000);
+  document.body.style.overflow = 'visible'; // Evita scroll bugs no html2canvas
+  html2pdf().set(opt).from(appCont).save().then(() => {
+    toast('PDF Exportado', '✅');
+    document.body.style.overflow = ''; // Restaura
+  });
+};
 
 // ─── KEYBOARD SHORTCUTS ───────────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
