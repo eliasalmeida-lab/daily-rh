@@ -53,22 +53,22 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 @keyframes scaleIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
 @keyframes welcomeText{0%{opacity:0;transform:translateY(18px);filter:blur(8px)}100%{opacity:1;transform:translateY(0);filter:blur(0)}}
 @keyframes welcomeFade{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}
-.login-screen{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;background:#f0ebe4;transition:opacity .5s ease,transform .5s ease;}
-.login-screen::before{content:'';position:absolute;top:-30%;left:-20%;width:70vw;height:70vw;border-radius:50%;background:radial-gradient(circle,rgba(124,179,66,.35) 0%,rgba(124,179,66,.08) 60%,transparent 70%);filter:blur(60px);animation:loginOrb1 12s ease-in-out infinite alternate;z-index:0;}
-.login-screen::after{content:'';position:absolute;bottom:-25%;right:-15%;width:60vw;height:60vw;border-radius:50%;background:radial-gradient(circle,rgba(93,78,55,.25) 0%,rgba(93,78,55,.06) 55%,transparent 70%);filter:blur(50px);animation:loginOrb2 10s ease-in-out infinite alternate;z-index:0;}
-.login-screen .login-orb3{position:absolute;top:20%;right:25%;width:40vw;height:40vw;border-radius:50%;background:radial-gradient(circle,rgba(156,212,94,.2) 0%,transparent 65%);filter:blur(45px);animation:loginOrb1 14s ease-in-out infinite alternate-reverse;z-index:0;pointer-events:none;}
-.login-screen.hidden{opacity:0;pointer-events:none;transform:scale(1.03);}
-.login-logo{width:240px;max-width:72vw;margin-bottom:32px;animation:float 4s ease-in-out infinite;position:relative;z-index:1;filter:drop-shadow(0 4px 20px rgba(93,78,55,.18));}
-.login-card{background:rgba(255,255,255,.7);backdrop-filter:blur(48px) saturate(200%);-webkit-backdrop-filter:blur(48px) saturate(200%);border:1px solid rgba(255,255,255,.5);border-radius:28px;padding:48px 44px;text-align:center;box-shadow:0 8px 48px rgba(93,78,55,.1),0 1px 0 rgba(255,255,255,.5) inset;max-width:460px;width:92%;position:relative;z-index:1;}
-.login-title{font-size:26px;font-weight:800;margin-bottom:6px;color:#1c1208;letter-spacing:-0.6px;}
-.login-sub{font-size:14px;color:#7a6f61;margin-bottom:28px;font-weight:400;}
-.login-btn{width:100%;padding:15px;border:none;border-radius:15px;background:linear-gradient(135deg,#7CB342,#5d9e25);color:#fff;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;transition:all .22s;letter-spacing:-0.01em;box-shadow:0 4px 18px rgba(124,179,66,.3);}
-.login-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,179,66,.38);}
+.login-screen{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;background:#050505;transition:opacity .7s cubic-bezier(0.16,1,0.3,1),transform .7s cubic-bezier(0.16,1,0.3,1);}
+.login-screen::before{content:'';position:absolute;top:-40%;left:-20%;width:80vw;height:80vw;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.18) 0%,rgba(34,197,94,.04) 50%,transparent 70%);filter:blur(90px);animation:loginOrb1 15s ease-in-out infinite alternate;z-index:0;}
+.login-screen::after{content:'';position:absolute;bottom:-30%;right:-20%;width:70vw;height:70vw;border-radius:50%;background:radial-gradient(circle,rgba(20,184,166,.12) 0%,transparent 60%);filter:blur(70px);animation:loginOrb2 12s ease-in-out infinite alternate;z-index:0;}
+.login-screen .login-orb3{position:absolute;top:10%;right:30%;width:50vw;height:50vw;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.12) 0%,transparent 60%);filter:blur(60px);animation:loginOrb1 18s ease-in-out infinite alternate-reverse;z-index:0;pointer-events:none;}
+.login-screen.hidden{opacity:0;pointer-events:none;transform:scale(1.05) translateY(-20px);}
+.login-logo{width:260px;max-width:72vw;margin-bottom:32px;animation:float 6s ease-in-out infinite;position:relative;z-index:1;filter:drop-shadow(0 8px 32px rgba(0,0,0,.6));}
+.login-card{background:rgba(24,24,27,.65);backdrop-filter:blur(64px) saturate(180%);-webkit-backdrop-filter:blur(64px) saturate(180%);border:1px solid rgba(255,255,255,.08);border-radius:32px;padding:52px 48px;text-align:center;box-shadow:0 32px 84px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.12) inset;max-width:440px;width:92%;position:relative;z-index:1;}
+.login-title{font-size:28px;font-weight:800;margin-bottom:8px;color:#ffffff;letter-spacing:-0.5px;}
+.login-sub{font-size:13px;color:#a1a1aa;margin-bottom:32px;font-weight:600;text-transform:uppercase;letter-spacing:1px;}
+.login-btn{width:100%;padding:16px;border:none;border-radius:16px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;margin-top:12px;transition:all .3s cubic-bezier(0.16,1,0.3,1);letter-spacing:0.2px;box-shadow:0 8px 24px rgba(34,197,94,.25),inset 0 1px 0 rgba(255,255,255,.25);}
+.login-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 32px rgba(34,197,94,.4),inset 0 1px 0 rgba(255,255,255,.3);}
 .login-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
-.welcome-screen{position:fixed;inset:0;background:#f0ebe4;z-index:10000;display:none;align-items:center;justify-content:center;}
+.welcome-screen{position:fixed;inset:0;background:#000000;z-index:10000;display:none;align-items:center;justify-content:center;}
 .welcome-screen.active{display:flex;animation:welcomeFade 2.5s ease-in-out forwards;}
-.welcome-text{font-size:46px;font-weight:300;color:#2c2417;opacity:0;animation:welcomeText 2s ease-out .3s forwards;letter-spacing:-1.5px;text-align:center;}
-.welcome-name{font-weight:800;color:#5d9e25;display:block;font-size:54px;margin-top:6px;letter-spacing:-2px;}
+.welcome-text{font-size:48px;font-weight:300;color:#ffffff;opacity:0;animation:welcomeText 2s ease-out .3s forwards;letter-spacing:-1px;text-align:center;}
+.welcome-name{font-weight:900;background:linear-gradient(135deg,var(--primary-light),var(--primary-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;font-size:64px;margin-top:6px;letter-spacing:-2px;}
 .app-container{display:none;}
 .app-container.active{display:block;}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:58px;border-bottom:1px solid var(--border);background:var(--topbar);backdrop-filter:blur(24px) saturate(200%);-webkit-backdrop-filter:blur(24px) saturate(200%);position:sticky;top:0;z-index:300;transition:background var(--tr);}
@@ -219,9 +219,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .fcard-body{padding:20px 22px;}
 .field{margin-bottom:16px;}.field:last-child{margin-bottom:0;}
 .field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-bottom:7px;}
-.field textarea,.field input,.field select{width:100%;background:var(--input-bg);border:1.5px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-family:var(--font);font-size:13px;resize:none;outline:none;transition:all .18s;line-height:1.6;}
+.field textarea,.field input,.field select{width:100%;background:var(--input-bg);border:1px solid var(--border);border-radius:14px;padding:14px 16px;color:var(--text);font-family:var(--font);font-size:14px;resize:none;outline:none;transition:all .25s cubic-bezier(0.16,1,0.3,1);line-height:1.6;box-shadow:inset 0 1px 3px rgba(0,0,0,0.1);}
 .field textarea{min-height:100px;overflow:hidden;}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--primary-dark);box-shadow:0 0 0 3px var(--glow);}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--glow),inset 0 1px 3px rgba(0,0,0,0.1);background:var(--surface2);}
 .field input::placeholder,.field textarea::placeholder{color:var(--muted);}
 .rstable{width:100%;border-collapse:collapse;font-size:13px;}
 .rstable th{text-align:left;padding:10px 16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1.5px solid var(--border2);background:var(--surface2);}
@@ -432,6 +432,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .le-save-btn{width:calc(100% - 44px);margin:18px 22px;padding:12px;border-radius:12px;border:none;background:var(--primary-dark);color:#fff;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;}
 .le-save-btn:hover{box-shadow:0 6px 18px rgba(22,163,74,.3);}
 .ai-card{background:linear-gradient(135deg,rgba(22,163,74,.07),rgba(34,197,94,.03));border:1.5px solid rgba(22,163,74,.2);border-radius:22px;padding:30px;margin-bottom:28px;}
+.login-input{width:100%;padding:16px 18px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.3);color:#ffffff;font-family:var(--font);font-size:14px;font-weight:500;transition:all .25s cubic-bezier(0.16,1,0.3,1);box-shadow:inset 0 2px 12px rgba(0,0,0,.4);margin-bottom:12px;outline:none;box-sizing:border-box;}
+.login-input::placeholder{color:rgba(255,255,255,.4);}
+.login-input:focus{border-color:var(--primary-dark);background:rgba(0,0,0,.6);box-shadow:0 0 0 4px rgba(34,197,94,.25),inset 0 2px 12px rgba(0,0,0,.6);}
 @media(max-width:1100px){.areas-grid,.prio-grid{grid-template-columns:repeat(2,1fr);}.metrics-kpi-row{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:960px){
   .areas-grid,.prio-grid,.fgrid,.prio-form-grid,.charts-row,.metrics-kpi-row,.met-section-row,.admin-grid{grid-template-columns:1fr;}
@@ -466,12 +469,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   <div class="login-card">
     <div class="login-title">Bem-vindo ao Painel</div>
     <div class="login-sub">Entre com seu e-mail corporativo</div>
-    <input id="login-email" type="email" placeholder="seu@email.com"
-      style="width:100%;padding:13px 16px;border:1.5px solid rgba(93,78,55,.15);border-radius:14px;background:rgba(255,255,255,.6);font-family:'Outfit',sans-serif;font-size:14px;color:#2c2417;margin-bottom:12px;outline:none;box-sizing:border-box;transition:border-color .2s;"
-      onfocus="this.style.borderColor='rgba(124,179,66,.6)'" onblur="this.style.borderColor='rgba(93,78,55,.15)'"/>
-    <input id="login-senha" type="password" placeholder="Senha"
-      style="width:100%;padding:13px 16px;border:1.5px solid rgba(93,78,55,.15);border-radius:14px;background:rgba(255,255,255,.6);font-family:'Outfit',sans-serif;font-size:14px;color:#2c2417;margin-bottom:8px;outline:none;box-sizing:border-box;transition:border-color .2s;"
-      onfocus="this.style.borderColor='rgba(124,179,66,.6)'" onblur="this.style.borderColor='rgba(93,78,55,.15)'"/>
+    <input id="login-email" type="email" class="login-input" placeholder="E-mail corporativo" />
+    <input id="login-senha" type="password" class="login-input" placeholder="Sua senha de acesso" />
     <p id="login-erro" style="color:#c0392b;font-size:13px;margin:0 0 10px;display:none;font-weight:500;text-align:left;">E-mail ou senha incorretos.</p>
     <button class="login-btn" onclick="doLogin()" id="login-btn">Entrar</button>
   </div>
