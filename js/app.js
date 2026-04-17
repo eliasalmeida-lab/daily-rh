@@ -1,6 +1,6 @@
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,deleteDoc,onSnapshot,deleteField}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,deleteDoc,onSnapshot,deleteField,updateDoc,arrayUnion}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────
 const fbCfg={apiKey:"AIzaSyA84hE7DlSkp-KqAi72H1KXWVEx-bw_sqA",authDomain:"daily-rh.firebaseapp.com",projectId:"daily-rh",storageBucket:"daily-rh.firebasestorage.app",messagingSenderId:"933947456380",appId:"1:933947456380:web:317245d871e259a4e082f9"};
@@ -58,6 +58,7 @@ function setEl(id,v){const el=document.getElementById(id);if(el)el.textContent=v
 function formatText(t){if(!t)return'';t=t.replace(/</g,'&lt;').replace(/>/g,'&gt;');const lines=t.split('\n');let out='',inList=false;for(let l of lines){const c=l.trim();if(c.startsWith('- ') || c.startsWith('* ')){if(!inList){out+='<ul style="margin:4px 0 4px 20px;padding-left:0;list-style-type:disc;">';inList=true;}out+='<li>'+c.substring(2)+'</li>';}else{if(inList){out+='</ul>';inList=false;}out+=c?c+'<br>':'<br>';}}if(inList)out+='</ul>';return out.replace(/(<br>)+$/,'');}
 function toast(msg,icon='✓',dur=3200){
   const t=document.getElementById('toast');
+  if(!t) return;
   document.getElementById('toast-msg').textContent=msg;
   const ic=document.getElementById('toast-icon');if(ic)ic.textContent=icon;
   t.classList.add('show');clearTimeout(t._tid);t._tid=setTimeout(()=>t.classList.remove('show'),dur);
@@ -78,6 +79,11 @@ async function loadFb(){
           store[a].current = newData.current || null;
           store[a].pautaHistory = newData.pautaHistory || [];
           store[a].prioHistory = newData.prioHistory || [];
+          
+          // Sincroniza prioStatus se vier do banco (campo prioStatus dentro do draft)
+          if(newData.draft?.prioStatus) {
+            Object.assign(prioStatus, newData.draft.prioStatus);
+          }
         }
         if(document.getElementById('app-container').classList.contains('active')){
           updateOverview(); updateMetrics(); renderPautaHistory();
@@ -260,7 +266,6 @@ window.switchTab=a=>{curTab=a;document.querySelectorAll('.atab').forEach(t=>t.cl
   if(myPresenceId) { try { setDoc(doc(db, 'rh-daily', '_presence'), { [myPresenceId]: { tab: a, time: Date.now() } }, {merge:true}); } catch(e){} }
 };
 
-// ─── DIRTY STATE ──────────────────────────────────────────────────────────
 // ─── DIRTY STATE & AUTO-SAVE ──────────────────────────────────────────────
 const autoSave = debounce(async (area) => {
   const d = collect(area);
@@ -294,6 +299,12 @@ function bindAutoGrow(){document.querySelectorAll('.auto-grow').forEach(el=>{aut
 function collect(a){
   const d={savedAt:new Date().toISOString()};
   document.querySelectorAll(`#form-${a} [data-field]`).forEach(el=>d[el.dataset.field]=el.value||'');
+  
+  // Coletar prioStatus específico desta área
+  const areaPrios = {};
+  Object.keys(prioStatus).forEach(k => { if(k.startsWith(a)) areaPrios[k] = prioStatus[k]; });
+  d.prioStatus = areaPrios;
+
   if(a==='rs'){const rows=[];document.querySelectorAll('#rs-tbody tr').forEach(tr=>{const c=tr.querySelectorAll('input,select');if(c.length>=7)rows.push({time:c[0].value,area:c[1].value,gestor:c[2].value,vaga:c[3].value,etapa:c[4].value,tempo:c[5].value,risco:c[6].value});});d.rs_vagas=rows;}
   return d;
 }
@@ -305,6 +316,10 @@ function restoreForm(a){
     const etapas=['Triagem','Entrevista RH','Entrevista Gestor','Proposta','Contratado','Onboarding','Pausada'];
     d.rs_vagas.forEach(v=>{const tr=document.createElement('tr');tr.innerHTML=`<td><input value="${v.time||''}"/></td><td><input value="${v.area||''}"/></td><td><input value="${v.gestor||''}"/></td><td><input value="${v.vaga||''}"/></td><td><select>${etapas.map(o=>`<option${o===v.etapa?' selected':''}>${o}</option>`).join('')}</select></td><td><input value="${v.tempo||''}"/></td><td><input value="${v.risco||''}" placeholder="Risco/Gargalo"/></td><td><button onclick="rmRow(this)" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;">🗑</button></td>`;tb.appendChild(tr);});
     updateRSIndicators();
+  }
+  // Se houver status salvos no objeto do banco para esta área, restaura
+  if(d.prioStatus) {
+    Object.assign(prioStatus, d.prioStatus);
   }
   restorePrioStatus();
 }
@@ -326,15 +341,37 @@ window.saveDaily=async()=>{
   const d=collect(curTab);d.finalized=true;d.date=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
   if(!store[curTab])store[curTab]={};store[curTab].current=d;
   if(!store[curTab].pautaHistory)store[curTab].pautaHistory=[];
-  const td=new Date().toDateString();if(!store[curTab].pautaHistory.find(h=>h.savedAt&&new Date(h.savedAt).toDateString()===td))store[curTab].pautaHistory.unshift(d);
-  localStorage.setItem('rh-store',JSON.stringify(store));clearDirty(curTab);toast('Pautas finalizadas','✅');
-  await fbSet(curTab,'current',d);updateOverview();renderPautaHistory();updateMetrics();
+  
+  const td=new Date().toDateString();
+  const exists = store[curTab].pautaHistory.find(h=>h.savedAt&&new Date(h.savedAt).toDateString()===td);
+  
+  if(!exists) {
+    store[curTab].pautaHistory.unshift(d);
+    // Persistir o histórico de pautas no Firestore para não perder no reload
+    await updateDoc(doc(db, 'rh-daily', curTab), { pautaHistory: arrayUnion(d) });
+  }
+
+  localStorage.setItem('rh-store',JSON.stringify(store));
+  clearDirty(curTab);
+  toast('Pautas finalizadas','✅');
+  await fbSet(curTab,'current',d);
+  updateOverview();renderPautaHistory();updateMetrics();
 };
 
 // ─── PRIORITIES ───────────────────────────────────────────────────────────
 window.setStatus=(btn,field)=>{const status=btn.dataset.status;btn.parentElement.querySelectorAll('.psbtn').forEach(b=>b.className='psbtn');btn.classList.add('active-'+status);prioStatus[field]=status;localStorage.setItem('rh-prio-status',JSON.stringify(prioStatus));markDirty(curTab);};
 function restorePrioStatus(){['dp','bp','rs','est'].forEach(a=>[1,2,3].forEach(n=>{const field=`${a}_p${n}`;const status=prioStatus[field];if(!status)return;const ta=document.querySelector(`textarea[data-field="${field}"]`);if(!ta)return;const card=ta.closest('.prio-form-card');if(!card)return;card.querySelectorAll('.psbtn').forEach(b=>b.className='psbtn');const target=card.querySelector(`.psbtn[data-status="${status}"]`);if(target)target.classList.add('active-'+status);}));}
-window.novaPrioridade=async(area,num)=>{const field=`${area}_p${num}`;const inp=document.querySelector(`[data-field="${field}"]`);const val=inp?.value?.trim();if(!val){toast('Prioridade já está vazia.','ℹ️');return;}if(!confirm(`Arquivar a Prioridade ${num} e limpar para uma nova?`))return;if(!store[area])store[area]={};if(!store[area].prioHistory)store[area].prioHistory=[];store[area].prioHistory.unshift({text:val,status:prioStatus[field]||'pending',num,archivedAt:new Date().toISOString(),date:new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})});inp.value='';delete prioStatus[field];localStorage.setItem('rh-prio-status',JSON.stringify(prioStatus));inp.closest('.prio-form-card')?.querySelectorAll('.psbtn').forEach(b=>b.className='psbtn');localStorage.setItem('rh-store',JSON.stringify(store));try{await fbSet(area,'prioHistory',store[area].prioHistory);}catch(e){}updateMetrics();buildPrioOverview();toast(`Prioridade ${num} arquivada`,'📦');};
+window.novaPrioridade=async(area,num)=>{const field=`${area}_p${num}`;const inp=document.querySelector(`[data-field="${field}"]`);const val=inp?.value?.trim();if(!val){toast('Prioridade já está vazia.','ℹ️');return;}if(!confirm(`Arquivar a Prioridade ${num} e limpar para uma nova?`))return;if(!store[area])store[area]={};if(!store[area].prioHistory)store[area].prioHistory=[];
+  const prioData = {text:val,status:prioStatus[field]||'pending',num,archivedAt:new Date().toISOString(),date:new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})};
+  store[area].prioHistory.unshift(prioData);
+  delete prioStatus[field];localStorage.setItem('rh-prio-status',JSON.stringify(prioStatus));inp.value='';
+  inp.closest('.prio-form-card')?.querySelectorAll('.psbtn').forEach(b=>b.className='psbtn');localStorage.setItem('rh-store',JSON.stringify(store));
+  try{
+    await updateDoc(doc(db, 'rh-daily', area), { prioHistory: arrayUnion(prioData) });
+    await fbSet(area, 'draft', collect(area)); // Limpa o texto da prioridade no draft do banco
+  }catch(e){}
+  updateMetrics();buildPrioOverview();toast(`Prioridade ${num} arquivada`,'📦');
+};
 
 // ─── AVATARS / CROP ───────────────────────────────────────────────────────
 window.triggerUpload=a=>document.getElementById('file-'+a).click();
@@ -434,9 +471,9 @@ window.openHistoryModal=date=>{
 };
 window.closeHistoryModal=()=>document.getElementById('history-overlay').classList.remove('active');
 function renderPautaHistory(){
-  ['dp','bp','rs','est'].forEach(a=>{const el=document.getElementById('pauta-history-'+a);if(!el)return;const entries=store[a]?.pautaHistory||[];if(!entries.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;font-style:italic;padding:12px 0;">Nenhuma pauta finalizada ainda.</div>';return;}el.innerHTML=entries.map((e,idx)=>{const date=e.date||'—';const sections=FIELD_MAP[a]||[];const filled=sections.flatMap(s=>s.fields.filter(f=>e[f.key]?.trim()).map(f=>f.label));const preview=filled.slice(0,3).join(' · ')||'Sem detalhes';return`<div class="hist-item" onclick="openPautaHistDetail('${a}',${idx})"><div class="hdot" style="background:${AREAS[a].color}"></div><div class="hinfo"><div class="hdate">Pauta — ${date}</div><div style="font-size:12px;color:var(--text2);margin-top:4px;">${preview}</div></div><div class="hact">Ver →</div></div>`;}).join('');});
+  ['dp','bp','rs','est'].forEach(a=>{const el=document.getElementById('pauta-history-'+a);if(!el)return;const entries=store[a]?.pautaHistory||[];if(!entries.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;font-style:italic;padding:12px 0;">Nenhuma pauta finalizada ainda.</div>';return;}el.innerHTML=entries.map((e,idx)=>{const date=e.date||'—';const sections=FIELD_MAP[a]||[];const filled=sections.flatMap(s=>s.fields.filter(f=>e[f.key]?.trim()).map(f=>f.label));const preview=filled.slice(0,3).join(' · ')||'Sem detalhes';return`<div class="hist-item" onclick="openPautaHistoryModal('${a}',${idx})"><div class="hdot" style="background:${AREAS[a].color}"></div><div class="hinfo"><div class="hdate">Pauta — ${date}</div><div style="font-size:12px;color:var(--text2);margin-top:4px;">${preview}</div></div><div class="hact">Ver →</div></div>`;}).join('');});
 }
-window.openPautaHistDetail=(area,idx)=>{const e=store[area]?.pautaHistory?.[idx];if(!e)return;document.getElementById('history-date').textContent=e.date||'—';const areasData={[area]:e};['dp','bp','rs','est'].filter(a=>a!==area).forEach(a=>areasData[a]={});document.getElementById('history-modal-body').innerHTML=buildDailyBodyHTML(areasData);document.getElementById('history-overlay').classList.add('active');};
+window.openPautaHistoryModal=(area,idx)=>{const e=store[area]?.pautaHistory?.[idx];if(!e)return;document.getElementById('history-date').textContent=e.date||'—';const areasData={[area]:e};['dp','bp','rs','est'].filter(a=>a!==area).forEach(a=>areasData[a]={});document.getElementById('history-modal-body').innerHTML=buildDailyBodyHTML(areasData);document.getElementById('history-overlay').classList.add('active');};
 
 // ─── PRESENTATION MODE ────────────────────────────────────────────────────
 window.openPresentation=()=>{
@@ -743,7 +780,8 @@ window.generateAISummary = () => {
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key==='d'){e.preventDefault();window.openDailyModal();}
   if(e.key==='Escape'){
-    document.querySelectorAll('.overlay.active').forEach(o=>o.classList.remove('active'));
+    const overlays = document.querySelectorAll('.overlay.active');
+    overlays.forEach(o=>o.classList.remove('active'));
     closePresentation();
   }
 });
