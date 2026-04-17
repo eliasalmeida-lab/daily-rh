@@ -1063,9 +1063,19 @@ window.saveDaily=async()=>{
   const d=collect(curTab);d.finalized=true;d.date=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
   if(!store[curTab])store[curTab]={};store[curTab].current=d;
   if(!store[curTab].pautaHistory)store[curTab].pautaHistory=[];
-  const td=new Date().toDateString();if(!store[curTab].pautaHistory.find(h=>h.savedAt&&new Date(h.savedAt).toDateString()===td))store[curTab].pautaHistory.unshift(d);
-  localStorage.setItem('rh-store',JSON.stringify(store));clearDirty(curTab);toast('Pautas finalizadas','✅');
-  await fbSet(curTab,'current',d);updateOverview();renderPautaHistory();updateMetrics();
+  const td=new Date().toDateString();
+  if(!store[curTab].pautaHistory.find(h=>h.savedAt&&new Date(h.savedAt).toDateString()===td)) {
+     store[curTab].pautaHistory.unshift(d);
+  }
+  localStorage.setItem('rh-store',JSON.stringify(store));
+  clearDirty(curTab);
+  toast('Pautas finalizadas','✅');
+  
+  // Sincroniza tanto a pauta atual quanto o histórico da área
+  await fbSet(curTab,'current',d);
+  await fbSet(curTab,'pautaHistory',store[curTab].pautaHistory);
+  
+  updateOverview();renderPautaHistory();updateMetrics();
 };
 
 // ─── PRIORITIES ───────────────────────────────────────────────────────────
@@ -1145,14 +1155,34 @@ window.finalizarDaily=async()=>{
     const areaPrios = {};
     Object.keys(prioStatus).forEach(k => { if(k.startsWith(a)) areaPrios[k] = prioStatus[k]; });
     const d={...areasData[a],finalized:true,date,savedAt:new Date().toISOString(),prioStatus:areaPrios};
-    if(!store[a])store[a]={};if(!store[a].history)store[a].history=[];
-    store[a].current=d;try{await fbSet(a,'current',d);await fbSet(a,'draft',null);await fbHist(a,d);}catch(e){}
+    
+    // Adiciona ao histórico geral (subcoleção)
+    await fbHist(a,d);
+    
+    // Adiciona ao histórico da área (array) e limpa a pauta atual no Firebase
+    if(!store[a].pautaHistory) store[a].pautaHistory = [];
+    store[a].pautaHistory.unshift(d);
+    await fbSet(a,'pautaHistory',store[a].pautaHistory);
+    await fbSet(a,'current',null);
+    await fbSet(a,'draft',null);
   }
   if(!store._meta)store._meta={};store._meta.dailysCount=(store._meta.dailysCount||0)+1;
   localStorage.setItem('rh-store',JSON.stringify(store));
   try{await setDoc(doc(db,'rh-daily','_meta'),{dailysCount:store._meta.dailysCount},{merge:true});}catch(e){}
-  ['dp','bp','rs','est'].forEach(a=>{document.querySelectorAll(`#form-${a} [data-field]`).forEach(el=>{if(!el.dataset.field.match(/^(dp|bp|rs|est)_p[123]$/))el.value='';});if(a==='rs'){const tb=document.getElementById('rs-tbody');if(tb)tb.innerHTML='';}store[a].draft=null;store[a].current=null;clearDirty(a);});
-  closeDailyModal();updateOverview();renderHistory();renderPautaHistory();updateMetrics();updateRSIndicators();toast('Daily finalizada e salva no histórico','✅');
+  
+  // Limpa campos na interface
+  ['dp','bp','rs','est'].forEach(a=>{
+    document.querySelectorAll(`#form-${a} [data-field]`).forEach(el=>{
+      if(!el.dataset.field.match(/^(dp|bp|rs|est)_p[123]$/)) el.value='';
+    });
+    if(a==='rs'){const tb=document.getElementById('rs-tbody');if(tb)tb.innerHTML='';}
+    store[a].draft=null;
+    store[a].current=null;
+    clearDirty(a);
+  });
+  
+  closeDailyModal();updateOverview();renderHistory();renderPautaHistory();updateMetrics();updateRSIndicators();
+  toast('Daily finalizada e salva no histórico','✅');
 };
 
 // ─── HISTORY ──────────────────────────────────────────────────────────────
