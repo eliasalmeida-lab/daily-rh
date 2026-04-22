@@ -841,6 +841,9 @@ async function loadFb(){
         if(!store[a]) store[a] = {};
         if(dd.exists()){
           const newData = dd.data();
+          // #region agent log
+          fetch('http://127.0.0.1:7799/ingest/717b8b31-026a-44f8-a6cd-ba3c2456c99d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9db85d'},body:JSON.stringify({sessionId:'9db85d',runId:'repro-1',hypothesisId:'H4',location:'index.html:onSnapshot-rh-daily-area',message:'Area snapshot received',data:{area:a,exists:dd.exists(),pautaHistoryLen:Array.isArray(newData?.pautaHistory)?newData.pautaHistory.length:0,currentDate:newData?.current?.date||null},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
           store[a].draft = newData.draft || null;
           store[a].current = newData.current || null;
           store[a].pautaHistory = newData.pautaHistory || [];
@@ -1060,7 +1063,13 @@ window.closeValidationModal=()=>document.getElementById('validation-overlay').cl
 window.confirmSaveDaily=()=>{closeValidationModal();window.saveDaily();};
 
 window.saveDaily=async()=>{
+  // #region agent log
+  fetch('http://127.0.0.1:7799/ingest/717b8b31-026a-44f8-a6cd-ba3c2456c99d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9db85d'},body:JSON.stringify({sessionId:'9db85d',runId:'repro-1',hypothesisId:'H1',location:'index.html:saveDaily:start',message:'saveDaily called',data:{curTab,dirtyTabs:Array.from(dirtyTabs||[])},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const d=collect(curTab);d.finalized=true;d.date=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  // #region agent log
+  fetch('http://127.0.0.1:7799/ingest/717b8b31-026a-44f8-a6cd-ba3c2456c99d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9db85d'},body:JSON.stringify({sessionId:'9db85d',runId:'repro-1',hypothesisId:'H2',location:'index.html:saveDaily:after-collect',message:'Collected payload summary',data:{curTab,date:d.date,filledCount:Object.keys(d).filter(k=>typeof d[k]==='string'&&d[k].trim()).length,hasRows:Array.isArray(d.rs_vagas)?d.rs_vagas.length:0},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const areaPrios={};
   Object.keys(prioStatus).forEach(k=>{if(k.startsWith(curTab+'_'))areaPrios[k]=prioStatus[k];});
   d.prioStatus=areaPrios;
@@ -1069,15 +1078,24 @@ window.saveDaily=async()=>{
   const idxToday=store[curTab].pautaHistory.findIndex(h=>h?.date===d.date);
   if(idxToday>=0)store[curTab].pautaHistory[idxToday]={...store[curTab].pautaHistory[idxToday],...d};
   else store[curTab].pautaHistory.unshift({...d});
+  // #region agent log
+  fetch('http://127.0.0.1:7799/ingest/717b8b31-026a-44f8-a6cd-ba3c2456c99d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9db85d'},body:JSON.stringify({sessionId:'9db85d',runId:'repro-1',hypothesisId:'H3',location:'index.html:saveDaily:before-write',message:'Prepared state before Firestore write',data:{curTab,idxToday,pautaHistoryLen:store[curTab].pautaHistory.length,firstEntryDate:store[curTab].pautaHistory?.[0]?.date||null},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   localStorage.setItem('rh-store',JSON.stringify(store));
   clearDirty(curTab);
   
   // Sincroniza pauta atual + histórico em uma única escrita para evitar corrida com onSnapshot
   try{
     await setDoc(doc(db,'rh-daily',curTab),{current:d,pautaHistory:store[curTab].pautaHistory},{merge:true});
+    // #region agent log
+    fetch('http://127.0.0.1:7799/ingest/717b8b31-026a-44f8-a6cd-ba3c2456c99d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9db85d'},body:JSON.stringify({sessionId:'9db85d',runId:'repro-1',hypothesisId:'H3',location:'index.html:saveDaily:write-success',message:'Firestore write success',data:{curTab,date:d.date,pautaHistoryLen:store[curTab].pautaHistory.length},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     toast('Pautas finalizadas','✅');
   }catch(e){
     console.warn('[saveDaily]',e);
+    // #region agent log
+    fetch('http://127.0.0.1:7799/ingest/717b8b31-026a-44f8-a6cd-ba3c2456c99d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9db85d'},body:JSON.stringify({sessionId:'9db85d',runId:'repro-1',hypothesisId:'H3',location:'index.html:saveDaily:write-error',message:'Firestore write failed',data:{curTab,errorName:e?.name||null,errorMessage:e?.message||null},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     toast('Não foi possível salvar a pauta no histórico. Tente novamente.','❌');
     return;
   }
@@ -1208,6 +1226,9 @@ window.openHistoryModal=date=>{
 };
 window.closeHistoryModal=()=>document.getElementById('history-overlay').classList.remove('active');
 function renderPautaHistory(){
+  // #region agent log
+  fetch('http://127.0.0.1:7799/ingest/717b8b31-026a-44f8-a6cd-ba3c2456c99d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9db85d'},body:JSON.stringify({sessionId:'9db85d',runId:'repro-1',hypothesisId:'H5',location:'index.html:renderPautaHistory',message:'Rendering pauta history lists',data:{dp:store?.dp?.pautaHistory?.length||0,bp:store?.bp?.pautaHistory?.length||0,rs:store?.rs?.pautaHistory?.length||0,est:store?.est?.pautaHistory?.length||0,curTab},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   ['dp','bp','rs','est'].forEach(a=>{const el=document.getElementById('pauta-history-'+a);if(!el)return;const entries=store[a]?.pautaHistory||[];if(!entries.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;font-style:italic;padding:12px 0;">Nenhuma pauta finalizada ainda.</div>';return;}el.innerHTML=entries.map((e,idx)=>{const date=e.date||'—';const sections=FIELD_MAP[a]||[];const filled=sections.flatMap(s=>s.fields.filter(f=>e[f.key]?.trim()).map(f=>f.label));const preview=filled.slice(0,3).join(' · ')||'Sem detalhes';return`<div class="hist-item" onclick="openPautaHistDetail('${a}',${idx})"><div class="hdot" style="background:${AREAS[a].color}"></div><div class="hinfo"><div class="hdate">Pauta — ${date}</div><div style="font-size:12px;color:var(--text2);margin-top:4px;">${preview}</div></div><div class="hact">Ver →</div></div>`;}).join('');});
 }
 window.openPautaHistDetail=(area,idx)=>{const e=store[area]?.pautaHistory?.[idx];if(!e)return;document.getElementById('history-date').textContent=e.date||'—';const areasData={[area]:e};['dp','bp','rs','est'].filter(a=>a!==area).forEach(a=>areasData[a]={});document.getElementById('history-modal-body').innerHTML=buildDailyBodyHTML(areasData);document.getElementById('history-overlay').classList.add('active');};
