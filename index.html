@@ -1071,13 +1071,16 @@ window.saveDaily=async()=>{
   else store[curTab].pautaHistory.unshift({...d});
   localStorage.setItem('rh-store',JSON.stringify(store));
   clearDirty(curTab);
-  toast('Pautas finalizadas','✅');
   
-  // Sincroniza tanto a pauta atual quanto o histórico da área
+  // Sincroniza pauta atual + histórico em uma única escrita para evitar corrida com onSnapshot
   try{
-    await fbSet(curTab,'current',d);
-    await fbSet(curTab,'pautaHistory',store[curTab].pautaHistory);
-  }catch(e){console.warn('[saveDaily]',e);}
+    await setDoc(doc(db,'rh-daily',curTab),{current:d,pautaHistory:store[curTab].pautaHistory},{merge:true});
+    toast('Pautas finalizadas','✅');
+  }catch(e){
+    console.warn('[saveDaily]',e);
+    toast('Não foi possível salvar a pauta no histórico. Tente novamente.','❌');
+    return;
+  }
   
   updateOverview();renderPautaHistory();updateMetrics();
 };
