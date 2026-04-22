@@ -1061,19 +1061,23 @@ window.confirmSaveDaily=()=>{closeValidationModal();window.saveDaily();};
 
 window.saveDaily=async()=>{
   const d=collect(curTab);d.finalized=true;d.date=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const areaPrios={};
+  Object.keys(prioStatus).forEach(k=>{if(k.startsWith(curTab+'_'))areaPrios[k]=prioStatus[k];});
+  d.prioStatus=areaPrios;
   if(!store[curTab])store[curTab]={};store[curTab].current=d;
   if(!store[curTab].pautaHistory)store[curTab].pautaHistory=[];
-  const td=new Date().toDateString();
-  if(!store[curTab].pautaHistory.find(h=>h.savedAt&&new Date(h.savedAt).toDateString()===td)) {
-     store[curTab].pautaHistory.unshift(d);
-  }
+  const idxToday=store[curTab].pautaHistory.findIndex(h=>h?.date===d.date);
+  if(idxToday>=0)store[curTab].pautaHistory[idxToday]={...store[curTab].pautaHistory[idxToday],...d};
+  else store[curTab].pautaHistory.unshift({...d});
   localStorage.setItem('rh-store',JSON.stringify(store));
   clearDirty(curTab);
   toast('Pautas finalizadas','✅');
   
   // Sincroniza tanto a pauta atual quanto o histórico da área
-  await fbSet(curTab,'current',d);
-  await fbSet(curTab,'pautaHistory',store[curTab].pautaHistory);
+  try{
+    await fbSet(curTab,'current',d);
+    await fbSet(curTab,'pautaHistory',store[curTab].pautaHistory);
+  }catch(e){console.warn('[saveDaily]',e);}
   
   updateOverview();renderPautaHistory();updateMetrics();
 };
