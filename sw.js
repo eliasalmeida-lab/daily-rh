@@ -1,4 +1,4 @@
-const CACHE_NAME='rh-painel-v3';
+const CACHE_NAME='rh-painel-v4';
 self.addEventListener('install', e=>{
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(['./','./index.html','./manifest.json'])));
