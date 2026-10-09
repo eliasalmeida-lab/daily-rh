@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens do Painel RH — visual inspirado no ClickUp
+ * (sidebar lateral, acento roxo→rosa, tipografia Inter).
+ * Temas claro/escuro via [data-theme], aplicado no <html> por ThemeScript
+ * antes da hidratação para evitar flash.
+ */
+
+:root {
+  --tr: 0.15s ease;
+  --primary: #7b68ee;
+  --primary-dark: #6552d9;
+  --primary-light: #9b8cf5;
+  --accent: #fd71af;
+  --brand-gradient: linear-gradient(135deg, #7b68ee 0%, #fd71af 100%);
+  --secondary: #475569;
+  --radius: 6px;
+  --r-xs: 6px;
+  --r-sm: 8px;
+  --r-md: 10px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --sidebar-w: 248px;
+
+  /* Tema claro (padrão) */
+  --bg: #ffffff;
+  --bg2: #f7f8f9;
+  --surface: #ffffff;
+  --surface2: #f7f8f9;
+  --surface3: #eff0f2;
+  --border: #e9ebf0;
+  --border2: #d8dbe3;
+  --border3: #a9aebb;
+  --text: #292d34;
+  --text2: #4b5160;
+  --muted: #7c828d;
+  --topbar: rgba(255, 255, 255, 0.95);
+  --modal: #ffffff;
+  --glow: rgba(123, 104, 238, 0.15);
+  --sidebar-bg: #f7f8f9;
+  --sidebar-hover: #eceef2;
+  --sidebar-active: #e8e4fd;
+  --card-shadow: 0 1px 2px rgba(41, 45, 52, 0.05);
+  --card-shadow-hover: 0 6px 16px -4px rgba(41, 45, 52, 0.12), 0 2px 6px -2px rgba(41, 45, 52, 0.06);
+  --input-bg: #ffffff;
+}
+
+[data-theme="dark"] {
+  --bg: #1f2023;
+  --bg2: #26272b;
+  --surface: #26272b;
+  --surface2: #2c2d32;
+  --surface3: #33353b;
+  --border: rgba(255, 255, 255, 0.08);
+  --border2: rgba(255, 255, 255, 0.14);
+  --border3: rgba(255, 255, 255, 0.22);
+  --text: #f0f1f3;
+  --text2: #b4b8c2;
+  --muted: #8a8f9b;
+  --topbar: rgba(31, 32, 35, 0.9);
+  --modal: #2c2d32;
+  --glow: rgba(123, 104, 238, 0.25);
+  --sidebar-bg: #17181a;
+  --sidebar-hover: #26272b;
+  --sidebar-active: rgba(123, 104, 238, 0.22);
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --card-shadow-hover: 0 12px 32px -6px rgba(0, 0, 0, 0.55), 0 4px 12px -4px rgba(0, 0, 0, 0.35);
+  --input-bg: #1f2023;
+}
+
+/* Expõe os tokens como cores utilitárias do Tailwind (bg-surface, text-muted, ...) */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg2: var(--bg2);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface2);
+  --color-surface3: var(--surface3);
+  --color-border-subtle: var(--border);
+  --color-border-strong: var(--border2);
+  --color-fg: var(--text);
+  --color-fg2: var(--text2);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-light: var(--primary-light);
+  --color-accent: var(--accent);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background var(--tr), color var(--tr);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.005em;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

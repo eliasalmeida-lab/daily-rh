@@ -1,0 +1,55 @@
+rules_version = '2';
+
+// PROPOSTA — revise antes de publicar (o app antigo usa as mesmas coleções).
+// - Exige login.
+// - Cada pessoa grava só na própria área (admin grava em todas).
+// - Finalizar a daily (_meta e histórico) é restrito a admin.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function me() {
+      return get(/databases/$(database)/documents/rh-daily-users/$(request.auth.token.email)).data;
+    }
+    // Usuário mestre: único que gerencia usuários.
+    function isMaster() {
+      return signedIn() && request.auth.token.email == 'elias.almeida@graodireto.com.br';
+    }
+    function isAdmin() {
+      return signedIn() && me().admin == true;
+    }
+    // Responsável por área (mesmo mapa do app) ou lista `areas` no cadastro do usuário.
+    function ownsArea(area) {
+      return signedIn() && (
+        isAdmin()
+        || ('areas' in me() && area in me().areas)
+        || (area == 'dp' && me().name == 'Ana Luísa')
+        || ((area == 'bp' || area == 'rs') && me().name == 'Amanda')
+        || (area == 'est' && me().name == 'Ursula')
+      );
+    }
+
+    match /rh-daily/_meta {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    match /rh-daily/_presence {
+      allow read, write: if signedIn();
+    }
+    match /rh-daily/{area} {
+      allow read: if signedIn();
+      allow write: if ownsArea(area);
+    }
+    match /rh-daily/{area}/history/{entry} {
+      allow read: if signedIn();
+      allow create: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    match /rh-daily-users/{email} {
+      allow read: if signedIn();
+      allow write: if isMaster();
+    }
+  }
+}
