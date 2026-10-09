@@ -19,8 +19,8 @@ import type { AppUser } from "@/types/domain";
 const DEFAULT_USERS: Record<string, { name: string; admin: boolean; areas?: AppUser["areas"] }> = {
   "elias.almeida@graodireto.com.br": { name: "Elias", admin: true },
   "ana.silva@graodireto.com.br": { name: "Ana Luísa", admin: false, areas: ["dp"] },
-  "amanda@graodireto.com": { name: "Amanda", admin: false },
-  "ursula@graodireto.com": { name: "Ursula", admin: false },
+  "amanda@graodireto.com.br": { name: "Amanda", admin: false, areas: ["bp", "rs"] },
+  "ursula@graodireto.com.br": { name: "Ursula", admin: false, areas: ["est"] },
 };
 
 interface AuthCtx {
