@@ -1,4 +1,4 @@
-name: Deploy Painel RH (GitHub Pages) — app antigo na raiz, novo em /novo/
+name: Deploy Painel RH (GitHub Pages) — app novo na raiz, antigo em /antigo/
 
 on:
   push:
@@ -30,20 +30,20 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}/novo
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
           NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
           NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
-      # Monta o site: app antigo na raiz (intacto) + app novo em /novo/.
+      # Monta o site: app novo na raiz + app antigo (backup) em /antigo/.
       - name: Montar site
         working-directory: .
         run: |
-          mkdir -p site
-          cp index.html manifest.json sw.js site/
-          cp -r web/out site/novo
+          cp -r web/out site
+          mkdir -p site/antigo
+          cp index.html manifest.json sw.js site/antigo/
           touch site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
