@@ -16,7 +16,7 @@ import type { AppUser } from "@/types/domain";
  * Usuários padrão (bootstrap). Se a coleção `rh-daily-users` estiver vazia no
  * primeiro login, ela é semeada com estes registros — igual ao index.html.
  */
-const DEFAULT_USERS: Record<string, { name: string; admin: boolean; areas?: AppUser["areas"] }> = {
+export const DEFAULT_USERS: Record<string, { name: string; admin: boolean; areas?: AppUser["areas"] }> = {
   "elias.almeida@graodireto.com.br": { name: "Elias", admin: true },
   "ana.silva@graodireto.com.br": { name: "Ana Luísa", admin: false, areas: ["dp"] },
   "amanda@graodireto.com.br": { name: "Amanda", admin: false, areas: ["bp", "rs"] },

@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { collection, deleteDoc, doc, onSnapshot, setDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, onSnapshot, setDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
-import { useAuth } from "@/lib/hooks/useAuth";
+import { DEFAULT_USERS, useAuth } from "@/lib/hooks/useAuth";
 import { AREAS, AREA_KEYS } from "@/lib/domain/areas";
 import { MASTER_EMAIL, canManageUsers } from "@/lib/domain/permissions";
 import type { AreaKey } from "@/types/domain";
@@ -91,6 +91,26 @@ function Users() {
     }
   }
 
+  // Usuários do sistema (definidos no código) que ainda não têm cadastro no Firestore.
+  const missing = rows
+    ? Object.entries(DEFAULT_USERS).filter(([email]) => !rows.some((r) => r.email.toLowerCase() === email))
+    : [];
+
+  async function registerAll() {
+    try {
+      const batch = writeBatch(db);
+      for (const [email, u] of missing) {
+        const data: Record<string, unknown> = { name: u.name, admin: u.admin };
+        if (u.areas?.length) data.areas = u.areas;
+        batch.set(doc(db, "rh-daily-users", email), data);
+      }
+      await batch.commit();
+      flash(`${missing.length} usuário(s) cadastrado(s)`);
+    } catch {
+      flash("Não foi possível cadastrar. Verifique as regras do Firestore.");
+    }
+  }
+
   async function remove(u: UserRow) {
     if (!confirm(`Remover o acesso de ${u.name}? (A conta de login continua existindo no Firebase.)`)) return;
     try {
@@ -111,6 +131,24 @@ function Users() {
           Gerencie quem acessa o sistema e quais áreas cada pessoa pode editar. Visível apenas para o usuário mestre.
         </p>
       </div>
+
+      {missing.length > 0 && (
+        <div
+          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-5 py-4 text-[13.5px]"
+          style={{ background: "#d977061a", borderColor: "#d9770655", color: "var(--text)" }}
+        >
+          <div>
+            <b>{missing.length} usuário(s) do sistema ainda não estão cadastrados:</b>{" "}
+            {missing.map(([email, u]) => `${u.name} (${email})`).join(", ")}.
+            <div className="mt-1 text-[12.5px]" style={{ color: "var(--text2)" }}>
+              Com as regras de segurança ativas, quem não está cadastrado não consegue salvar pautas.
+            </div>
+          </div>
+          <button onClick={registerAll} className="rounded-lg px-4 py-2 text-[13px] font-semibold text-white" style={{ background: "#d97706" }}>
+            Cadastrar todos
+          </button>
+        </div>
+      )}
 
       <section className="mb-6 rounded-xl border" style={{ background: "var(--surface)", borderColor: "var(--border)", boxShadow: "var(--card-shadow)" }}>
         <div className="border-b px-5 py-3 text-[13.5px] font-semibold" style={{ borderColor: "var(--border)", color: "var(--text)" }}>
