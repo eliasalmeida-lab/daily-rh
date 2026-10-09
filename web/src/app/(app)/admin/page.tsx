@@ -5,15 +5,12 @@ import { useRouter } from "next/navigation";
 import { collection, deleteDoc, doc, onSnapshot, setDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { DEFAULT_USERS, useAuth } from "@/lib/hooks/useAuth";
-import { AREAS, AREA_KEYS } from "@/lib/domain/areas";
 import { MASTER_EMAIL, canManageUsers } from "@/lib/domain/permissions";
-import type { AreaKey } from "@/types/domain";
 
 interface UserRow {
   email: string;
   name: string;
   admin: boolean;
-  areas?: AreaKey[];
 }
 
 const input =
@@ -35,7 +32,7 @@ export default function AdminPage() {
 function Users() {
   const [rows, setRows] = useState<UserRow[] | null>(null);
   const [msg, setMsg] = useState("");
-  const [draft, setDraft] = useState<UserRow>({ email: "", name: "", admin: false, areas: [] });
+  const [draft, setDraft] = useState<UserRow>({ email: "", name: "", admin: false });
   const [err, setErr] = useState("");
 
   useEffect(() => {
@@ -57,25 +54,18 @@ function Users() {
 
   async function save(u: UserRow) {
     const data: Record<string, unknown> = { name: u.name.trim(), admin: u.admin };
-    if (u.areas?.length) data.areas = u.areas;
     await setDoc(doc(db, "rh-daily-users", u.email.trim().toLowerCase()), data);
   }
 
   async function patch(u: UserRow, p: Partial<UserRow>) {
     try {
       const next = { ...u, ...p };
-      // Para remover `areas`, regrava sem o campo (setDoc substitui o documento).
       await save(next);
       flash("Alteração salva");
     } catch {
       flash("Não foi possível salvar. Verifique as regras do Firestore.");
     }
   }
-
-  const toggleArea = (u: UserRow, a: AreaKey) => {
-    const cur = u.areas ?? [];
-    patch(u, { areas: cur.includes(a) ? cur.filter((x) => x !== a) : [...cur, a] });
-  };
 
   async function add() {
     setErr("");
@@ -84,7 +74,7 @@ function Users() {
     if (!draft.name.trim()) return setErr("Informe o nome.");
     try {
       await save({ ...draft, email });
-      setDraft({ email: "", name: "", admin: false, areas: [] });
+      setDraft({ email: "", name: "", admin: false });
       flash("Usuário salvo");
     } catch {
       setErr("Não foi possível salvar. Verifique as regras do Firestore.");
@@ -101,7 +91,6 @@ function Users() {
       const batch = writeBatch(db);
       for (const [email, u] of missing) {
         const data: Record<string, unknown> = { name: u.name, admin: u.admin };
-        if (u.areas?.length) data.areas = u.areas;
         batch.set(doc(db, "rh-daily-users", email), data);
       }
       await batch.commit();
@@ -128,7 +117,7 @@ function Users() {
           Administração
         </h1>
         <p className="mt-1 text-[13.5px]" style={{ color: "var(--muted)" }}>
-          Gerencie quem acessa o sistema e quais áreas cada pessoa pode editar. Visível apenas para o usuário mestre.
+          Gerencie quem acessa o sistema e quem é administrador. Todos os usuários editam todas as áreas. Visível apenas para o usuário mestre.
         </p>
       </div>
 
@@ -141,7 +130,7 @@ function Users() {
             <b>{missing.length} usuário(s) do sistema ainda não estão cadastrados:</b>{" "}
             {missing.map(([email, u]) => `${u.name} (${email})`).join(", ")}.
             <div className="mt-1 text-[12.5px]" style={{ color: "var(--text2)" }}>
-              Com as regras de segurança ativas, quem não está cadastrado não consegue salvar pautas.
+              O cadastro define o nome exibido e quem é administrador.
             </div>
           </div>
           <button onClick={registerAll} className="rounded-lg px-4 py-2 text-[13px] font-semibold text-white" style={{ background: "#d97706" }}>
@@ -152,7 +141,7 @@ function Users() {
 
       <section className="mb-6 rounded-xl border" style={{ background: "var(--surface)", borderColor: "var(--border)", boxShadow: "var(--card-shadow)" }}>
         <div className="border-b px-5 py-3 text-[13.5px] font-semibold" style={{ borderColor: "var(--border)", color: "var(--text)" }}>
-          Usuários e permissões
+          Usuários
         </div>
 
         {rows === null ? (
@@ -169,7 +158,6 @@ function Users() {
               <thead>
                 <tr className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--muted)" }}>
                   <th className="px-5 py-3">Usuário</th>
-                  <th className="px-3 py-3">Áreas que pode editar</th>
                   <th className="px-3 py-3">Admin</th>
                   <th className="px-3 py-3" />
                 </tr>
@@ -191,32 +179,6 @@ function Users() {
                         <div className="text-[12px]" style={{ color: "var(--muted)" }}>
                           {u.email}
                         </div>
-                      </td>
-                      <td className="px-3 py-3">
-                        {u.admin ? (
-                          <span style={{ color: "var(--muted)" }}>Todas (admin)</span>
-                        ) : (
-                          <div className="flex flex-wrap gap-1.5">
-                            {AREA_KEYS.map((a) => {
-                              const on = u.areas?.includes(a);
-                              return (
-                                <button
-                                  key={a}
-                                  onClick={() => toggleArea(u, a)}
-                                  className="rounded-full border px-2.5 py-1 text-[11.5px] font-semibold transition"
-                                  style={on ? { background: AREAS[a].color, borderColor: AREAS[a].color, color: "#fff" } : { borderColor: "var(--border2)", color: "var(--muted)" }}
-                                >
-                                  {AREAS[a].short}
-                                </button>
-                              );
-                            })}
-                            {!u.areas?.length && (
-                              <span className="self-center text-[11.5px]" style={{ color: "var(--muted)" }}>
-                                (padrão: área do próprio nome)
-                              </span>
-                            )}
-                          </div>
-                        )}
                       </td>
                       <td className="px-3 py-3">
                         <input
@@ -252,23 +214,6 @@ function Users() {
           <input className={input} style={{ borderColor: "var(--border2)", color: "var(--text)" }} placeholder="E-mail" value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} />
           <input className={input} style={{ borderColor: "var(--border2)", color: "var(--text)" }} placeholder="Nome (como aparece no app)" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
           <div className="flex flex-wrap items-center gap-1.5 md:col-span-2">
-            <span className="mr-1 text-[12px]" style={{ color: "var(--muted)" }}>
-              Áreas:
-            </span>
-            {AREA_KEYS.map((a) => {
-              const on = draft.areas?.includes(a);
-              return (
-                <button
-                  key={a}
-                  type="button"
-                  onClick={() => setDraft({ ...draft, areas: on ? draft.areas?.filter((x) => x !== a) : [...(draft.areas ?? []), a] })}
-                  className="rounded-full border px-2.5 py-1 text-[11.5px] font-semibold"
-                  style={on ? { background: AREAS[a].color, borderColor: AREAS[a].color, color: "#fff" } : { borderColor: "var(--border2)", color: "var(--muted)" }}
-                >
-                  {AREAS[a].short}
-                </button>
-              );
-            })}
             <label className="ml-4 flex items-center gap-2 text-[12.5px]" style={{ color: "var(--text2)" }}>
               <input type="checkbox" checked={draft.admin} onChange={(e) => setDraft({ ...draft, admin: e.target.checked })} className="h-4 w-4 accent-[var(--primary)]" />
               Admin
